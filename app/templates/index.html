@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Além da Meta Concursos | Centro de Operações de Estudos</title>
+  
+  <!-- Local Offline Vendor Assets (100% funcional sem internet - B2) -->
+  <script src="/static/vendor/tailwind.min.js"></script>
+  <link rel="stylesheet" href="/static/vendor/fontawesome/css/all.min.css">
+  <script src="/static/vendor/chart.umd.min.js"></script>
+  
+  <!-- Custom Tactical Stylesheet -->
+  <link rel="stylesheet" href="/static/css/custom.css?v=3.1">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            tactical: {
+              bg: '#07090e',
+              card: '#0c1017',
+              border: '#182030',
+              blue: '#1d4ed8',
+              gold: '#b45309',
+              green: '#059669',
+              red: '#dc2626',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#07090e] text-slate-200 antialiased selection:bg-slate-700 selection:text-white">
+
+  <!-- ==================== AUTH OVERLAY (LOGIN & CADASTRO MULTI-CARREIRA) ==================== -->
+  <div id="auth-overlay" class="fixed inset-0 z-50 bg-[#07090e]/98 backdrop-blur-md flex items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#232f46] rounded-xl p-5 sm:p-6 shadow-2xl shadow-black/95 my-auto">
+      <div class="flex items-center space-x-3 mb-5 pb-4 border-b border-[#182030]">
+        <div class="w-10 h-10 rounded-lg bg-[#111724] border border-amber-500/40 flex items-center justify-center text-amber-400 shadow">
+          <i class="fa-solid fa-shield-halved text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-tactical font-black text-base tracking-wider text-white">ALÉM DA META <span class="text-amber-400">CONCURSOS</span></span>
+          </div>
+          <div class="text-[10px] font-mono-tactical text-slate-400 tracking-wider">PLATAFORMA MULTI-CARREIRA • ACESSO INDIVIDUAL</div>
+        </div>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="grid grid-cols-2 gap-2 p-1 bg-[#07090e] rounded-lg border border-[#182030] mb-4">
+        <button id="auth-tab-login" onclick="switchAuthTab('login')" class="py-1.5 rounded text-xs font-tactical font-bold bg-slate-100 text-slate-950 transition">
+          <i class="fa-solid fa-right-to-bracket mr-1.5"></i>ENTRAR
+        </button>
+        <button id="auth-tab-register" onclick="switchAuthTab('register')" class="py-1.5 rounded text-xs font-tactical font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-user-plus mr-1.5"></i>CRIAR CONTA
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="auth-form-login" onsubmit="event.preventDefault(); submitLogin();" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">USUÁRIO OU E-MAIL</label>
+          <input type="text" id="auth-login-user" required placeholder="Ex: mikael" class="w-full bg-[#07090e] border border-[#182030] rounded px-3 py-2 text-xs text-slate-100 focus:border-amber-500/60 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">SENHA</label>
+          <input type="password" id="auth-login-pass" required placeholder="••••••••" class="w-full bg-[#07090e] border border-[#182030] rounded px-3 py-2 text-xs text-slate-100 focus:border-amber-500/60 focus:outline-none">
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-lg text-xs font-tactical font-black tracking-wider shadow transition">
+          ACESSAR CENTRAL DE OPERAÇÕES
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="auth-form-register" onsubmit="event.preventDefault(); submitRegister();" class="space-y-2.5 hidden">
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">USUÁRIO (LOGIN)</label>
+            <input type="text" id="auth-reg-username" required placeholder="ex: joaosilva" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-100">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">SEU NOME</label>
+            <input type="text" id="auth-reg-name" required placeholder="Ex: João Silva" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-100">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">E-MAIL (OPCIONAL)</label>
+            <input type="email" id="auth-reg-email" placeholder="joao@email.com" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-100">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">SENHA</label>
+            <input type="password" id="auth-reg-password" required minlength="4" placeholder="Mín. 4 caracteres" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-100">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-amber-400 mb-1">QUAL CARREIRA VOCÊ VAI ESTUDAR?</label>
+          <select id="auth-reg-career" onchange="onCareerSelectChange()" class="w-full bg-[#07090e] border border-amber-500/40 rounded px-2.5 py-1.5 text-xs text-slate-100 font-semibold">
+            <option value="PM">Polícia Militar (PM)</option>
+            <option value="PRF">Polícia Rodoviária Federal (PRF)</option>
+            <option value="PF">Polícia Federal (PF - Agente / Escrivão)</option>
+            <option value="PC">Polícia Civil (Agente / Investigador / Escrivão)</option>
+            <option value="PP">Polícia Penal (Estadual / SENAPPEN)</option>
+            <option value="CUSTOM">Personalizada / Outro Concurso</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="col-span-2">
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">CONCURSO / CARGO ALVO</label>
+            <input type="text" id="auth-reg-target" placeholder="Ex: PM-TO Soldado" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-100">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">META DIA (H)</label>
+            <input type="number" step="0.5" min="0.5" max="12" id="auth-reg-daily" value="3" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-100 text-center">
+          </div>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg text-xs font-tactical font-black tracking-wider shadow transition mt-1">
+          CRIAR CONTA E MONTAR MEU EDITAL
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== TOP COMMAND BAR ==================== -->
+  <header class="border-b border-[#182030] bg-[#0a0d14]/95 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-[1540px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      
+      <!-- Logo & System Identifier -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+        <div class="w-8 h-8 rounded bg-[#111724] border border-[#232e42] flex items-center justify-center text-slate-100 shadow">
+          <i class="fa-solid fa-shield-halved text-amber-500 text-base"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-tactical font-black text-base tracking-wider text-white">ALÉM DA META <span class="text-amber-400">CONCURSOS</span></span>
+            <span class="tactical-pill bg-[#131a26] text-amber-400 border border-[#232f46] text-[8px] font-bold">v3.0</span>
+          </div>
+          <div class="text-[9px] font-mono-tactical text-slate-400 tracking-wider" id="header-brand-sub">CENTRO DE OPERAÇÕES MULTI-CARREIRA</div>
+        </div>
+      </div>
+
+      <!-- Center: Tactical Radar Status & Military Clock -->
+      <div class="hidden md:flex items-center space-x-6 border-x border-[#182030] px-5 py-1">
+        <div class="flex items-center space-x-2">
+          <span class="radar-live-dot"></span>
+          <span class="text-xs font-mono-tactical text-emerald-400 font-semibold tracking-wider">STATUS: OPERACIONAL - QAP</span>
+        </div>
+        <div class="text-right font-mono-tactical">
+          <div class="text-sm font-bold text-slate-100" id="tactical-clock">00:00:00</div>
+          <div class="text-[10px] text-slate-500 tracking-wider" id="tactical-date">SEX, 30/10/2026</div>
+        </div>
+      </div>
+
+      <!-- Quick Search Trigger (Ctrl + K) -->
+      <button onclick="openGlobalSearchModal()" class="hidden md:flex items-center space-x-2 bg-[#0d121c] hover:bg-[#141b26] text-slate-400 hover:text-slate-200 px-3 py-1.5 rounded-lg border border-[#1e2738] transition text-xs font-mono-tactical">
+        <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+        <span>BUSCA TÁTICA...</span>
+        <kbd class="bg-[#07090e] px-1.5 py-0.5 rounded text-[10px] text-slate-500 border border-[#182030]">Ctrl K</kbd>
+      </button>
+
+      <!-- Right: User Operational Rank Badge & Profile -->
+      <div class="flex items-center space-x-3">
+        <!-- Mobile Search Button -->
+        <button onclick="openGlobalSearchModal()" class="md:hidden w-8 h-8 rounded-lg bg-[#0d121c] hover:bg-[#141b26] text-slate-300 flex items-center justify-center border border-[#1e2738] transition" title="Busca Tática (Ctrl+K)">
+          <i class="fa-solid fa-magnifying-glass text-xs text-slate-400"></i>
+        </button>
+        <!-- Rank Badge Widget -->
+        <div class="hidden sm:flex items-center space-x-2.5 bg-[#0d121c] px-3 py-1 rounded-lg border border-[#1e2738] cursor-pointer hover:border-slate-500 transition" onclick="openProfileModal()">
+          <div class="w-6 h-6 rounded bg-[#17140e] border border-amber-900/60 flex items-center justify-center text-amber-500">
+            <i class="fa-solid fa-medal text-xs"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="text-xs font-bold text-amber-400 font-tactical" id="badge-rank-title">Recruta Operacional</span>
+              <span class="text-[8px] bg-amber-950 text-amber-300 font-mono-tactical px-1 rounded" id="badge-rank-level">NVL 1</span>
+            </div>
+            <div class="text-[10px] text-slate-400 truncate max-w-[120px]" id="header-user-name">Agente Operacional</div>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <button onclick="switchTab('timer')" class="bg-[#1d4ed8] hover:bg-[#1e40af] text-white px-3 py-1 rounded text-xs font-tactical font-semibold flex items-center space-x-1.5 border border-blue-600/40 transition">
+          <i class="fa-solid fa-stopwatch text-xs"></i>
+          <span class="hidden sm:inline">PLANTÃO DE ESTUDOS</span>
+        </button>
+
+        <button onclick="openProfileModal()" class="w-8 h-8 rounded bg-[#0d121c] hover:bg-[#141b26] text-slate-300 flex items-center justify-center border border-[#1e2738] transition" title="Configurações Operacionais">
+          <i class="fa-solid fa-gear text-xs"></i>
+        </button>
+
+        <button onclick="logoutUser()" class="w-8 h-8 rounded bg-[#0d121c] hover:bg-rose-950/60 text-slate-400 hover:text-rose-300 flex items-center justify-center border border-[#1e2738] hover:border-rose-700/50 transition" title="Sair da Conta">
+          <i class="fa-solid fa-right-from-bracket text-xs"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE LAYOUT ==================== -->
+  <div class="max-w-[1540px] mx-auto px-3 sm:px-6 py-4">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5" id="main-layout-grid">
+
+      <!-- LEFT COLUMN: TACTICAL SIDEBAR NAVIGATION -->
+      <aside id="tactical-sidebar" class="lg:col-span-3 space-y-2.5 transition-all duration-200">
+        
+        <!-- Sidebar Collapse / Expand Toggle Bar -->
+        <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#0c1017] border border-[#182030]">
+          <div class="flex items-center space-x-2 sidebar-text">
+            <i class="fa-solid fa-shield-halved text-xs text-slate-400"></i>
+            <span class="text-[10px] font-mono-tactical text-slate-300 font-bold tracking-wider">CONSOLE TÁTICO</span>
+          </div>
+          <button onclick="toggleSidebarCompact()" id="btn-toggle-sidebar" class="text-slate-400 hover:text-white p-1 rounded bg-[#141b28] hover:bg-[#1d273a] transition border border-[#202c42]" title="Recolher / Ocultar Menu Lateral (Mais Espaço)">
+            <i class="fa-solid fa-angles-left text-xs" id="sidebar-toggle-icon"></i>
+          </button>
+        </div>
+
+        <!-- Profile & Target Role Card -->
+        <div class="tactical-card p-3 rounded-lg border border-[#182030] bg-[#0c1017] sidebar-mission-card">
+          <div class="sidebar-mission-details">
+            <div class="text-[9px] font-mono-tactical text-slate-400 font-bold mb-1 tracking-wider uppercase flex items-center justify-between">
+              <span>MISSÃO PRINCIPAL / ALVO</span>
+              <i class="fa-solid fa-crosshairs text-rose-500 text-[10px]"></i>
+            </div>
+            <div class="text-xs font-bold text-slate-100 truncate mb-2" id="header-target-role">
+              Polícia Federal - Agente
+            </div>
+
+            <!-- Rank XP Progress Bar -->
+            <div class="pt-2 border-t border-[#182030]">
+              <div class="flex justify-between text-[10px] mb-1">
+                <span class="text-slate-400 font-mono-tactical">Patente</span>
+                <span class="text-amber-400 font-mono-tactical font-bold" id="rank-xp-hours">0h / 10h</span>
+              </div>
+              <div class="w-full bg-[#080b11] h-1.5 rounded-full overflow-hidden border border-[#182030]">
+                <div id="rank-progress-bar" class="bg-gradient-to-r from-amber-600 to-amber-400 h-full w-0 transition-all duration-300"></div>
+              </div>
+              <div class="text-[9px] text-slate-500 font-mono-tactical mt-1 text-right" id="rank-needed-text">
+                Faltam 10h para a próxima patente
+              </div>
+            </div>
+          </div>
+
+          <!-- Collapsed miniature view -->
+          <div class="hidden sidebar-compact-show text-center py-1">
+            <i class="fa-solid fa-shield-halved text-amber-500 text-sm"></i>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs Menu (C4: Menu enxuto e agrupado) -->
+        <nav class="tactical-card rounded-lg border border-[#182030] bg-[#0c1017] p-1.5 space-y-0.5">
+          <div class="sidebar-group-label px-2.5 pt-1 pb-0.5 text-[9px] font-mono-tactical text-slate-500 font-bold tracking-widest uppercase">OPERAÇÕES</div>
+
+          <button data-tab="dashboard" class="nav-tab-btn nav-tab-active w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Painel de Comando">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-gauge-high text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">PAINEL DE COMANDO</span>
+            </div>
+            <i class="fa-solid fa-chevron-right text-[9px] text-slate-600 sidebar-chevron"></i>
+          </button>
+
+          <button data-tab="timer" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Plantão de Estudos">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-stopwatch text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">PLANTÃO (CRONÔMETRO)</span>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 hidden" id="timer-radar-status"></span>
+          </button>
+
+          <button data-tab="subjects" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Dossiê de Matérias">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-folder-closed text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">DOSSIÊ DE MATÉRIAS</span>
+            </div>
+            <i class="fa-solid fa-chevron-right text-[9px] text-slate-600 sidebar-chevron"></i>
+          </button>
+
+          <button data-tab="revisions" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Protocolo de Revisões">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-rotate text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">REVISÕES ESPAÇADAS</span>
+            </div>
+            <span id="revisions-badge-pulse" class="w-2 h-2 rounded-full bg-rose-500 animate-ping hidden"></span>
+          </button>
+
+          <div class="sidebar-group-label px-2.5 pt-2 pb-0.5 text-[9px] font-mono-tactical text-slate-500 font-bold tracking-widest uppercase border-t border-[#161e2e] mt-1">COMBATE & BLINDAGEM</div>
+
+          <button data-tab="simulations" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Simulados & Combate">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-bullseye text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">SIMULADOS & COMBATE</span>
+            </div>
+            <i class="fa-solid fa-chevron-right text-[9px] text-slate-600 sidebar-chevron"></i>
+          </button>
+
+          <button data-tab="leiseca" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Radar de Lei Seca">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-scale-balanced text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">RADAR DE LEI SECA</span>
+            </div>
+            <span class="tactical-pill bg-[#151c2a] text-slate-400 border border-[#232e42] text-[8px] sidebar-pill">LEIS</span>
+          </button>
+
+          <button data-tab="cadernoerros" data-group="blindagem" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Blindagem: Caderno de Erros e Redações">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-shield-virus text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">BLINDAGEM (ERROS + RED.)</span>
+            </div>
+            <span class="tactical-pill bg-[#151c2a] text-rose-400 border border-[#232e42] text-[8px] sidebar-pill">2 EM 1</span>
+          </button>
+
+          <div class="sidebar-group-label px-2.5 pt-2 pb-0.5 text-[9px] font-mono-tactical text-slate-500 font-bold tracking-widest uppercase border-t border-[#161e2e] mt-1">INTELIGÊNCIA & PERFIL</div>
+
+          <button data-tab="news" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Notícias & Editais Policiais">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-newspaper text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">NOTÍCIAS POLICIAIS</span>
+            </div>
+            <span class="tactical-pill bg-[#151c2a] text-emerald-400 border border-[#232e42] text-[8px] sidebar-pill">INTEL</span>
+          </button>
+
+          <button data-tab="arsenal" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Arsenal (Sites & Vídeos)">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-laptop-code text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">ARSENAL DE ESTUDOS</span>
+            </div>
+            <span class="tactical-pill bg-[#151c2a] text-slate-400 border border-[#232e42] text-[8px] sidebar-pill">SITES</span>
+          </button>
+
+          <button data-tab="conquistas" data-group="perfil" class="nav-tab-btn w-full text-left px-2.5 py-1.5 rounded text-xs font-tactical font-semibold flex items-center justify-between text-slate-300 hover:bg-[#151c2a] transition" title="Perfil Operacional: Quadro de Honra e TAF">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-medal text-slate-400 w-4 text-center"></i>
+              <span class="sidebar-text truncate">PERFIL (HONRA + TAF)</span>
+            </div>
+            <span class="tactical-pill bg-[#151c2a] text-amber-400 border border-[#232e42] text-[8px] sidebar-pill">2 EM 1</span>
+          </button>
+        </nav>
+
+        <!-- Tactical Motivational Card -->
+        <div class="tactical-card p-3 rounded-lg border border-[#182030] bg-[#0c1017] sidebar-motivation-card">
+          <div class="flex items-center space-x-1.5 text-slate-400 text-xs font-tactical mb-1.5">
+            <i class="fa-solid fa-quote-left text-[10px]"></i>
+            <span class="font-bold tracking-wider">LEMA OPERACIONAL</span>
+          </div>
+          <p class="text-[11px] text-slate-400 italic leading-relaxed">
+            "Treinamento difícil, combate fácil. Missão dada é missão cumprida."
+          </p>
+          <div class="text-[9px] font-mono-tactical text-slate-600 mt-1 text-right font-bold">QAP &bull; QRV</div>
+        </div>
+
+      </aside>
+
+      <!-- RIGHT COLUMN: MAIN CONTENT DYNAMIC PANELS -->
+      <main id="main-content-column" class="lg:col-span-9 space-y-4 transition-all duration-200">
+
+        <!-- ==================== TAB: DASHBOARD ==================== -->
+        <section id="tab-dashboard" class="tab-content-panel space-y-4">
+          
+          <!-- HUD: CONTAGEM REGRESSIVA DO DIA D (OPERAÇÃO PROVA) -->
+          <div class="tactical-card p-3.5 sm:p-4 rounded-lg border border-[#1e2738] bg-[#0c1017] relative overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2.5 mb-2.5">
+              <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span class="text-xs font-tactical font-black text-slate-200 tracking-wider uppercase">OPERAÇÃO DIA D: CONTAGEM REGRESSIVA</span>
+                <span class="text-xs text-amber-400 font-bold hidden sm:inline" id="hud-countdown-title">Operação PC-TO (Agente) - Publicação do Edital</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-[11px] font-mono-tactical text-slate-400" id="hud-countdown-target-date">--/--/----</span>
+                <button onclick="openEditCountdownModal()" class="text-xs text-slate-300 hover:text-white font-tactical px-2 py-0.5 rounded bg-[#151c2a] hover:bg-[#1e273a] border border-[#232f46] transition">
+                  <i class="fa-solid fa-pen-to-square text-[10px] mr-1"></i>CONFIGURAR DIA D
+                </button>
+              </div>
+            </div>
+
+            <!-- 4 Digital Counter Boxes -->
+            <div class="grid grid-cols-4 gap-2 sm:gap-3 max-w-lg mx-auto text-center">
+              <div class="bg-[#07090e] p-2 sm:p-2.5 rounded border border-[#1a2233]">
+                <div class="text-xl sm:text-3xl font-mono-tactical font-black text-white" id="hud-countdown-days">00</div>
+                <div class="text-[9px] font-tactical text-slate-400 font-bold tracking-wider mt-0.5">DIAS</div>
+              </div>
+              <div class="bg-[#07090e] p-2 sm:p-2.5 rounded border border-[#1a2233]">
+                <div class="text-xl sm:text-3xl font-mono-tactical font-black text-white" id="hud-countdown-hours">00</div>
+                <div class="text-[9px] font-tactical text-slate-400 font-bold tracking-wider mt-0.5">HORAS</div>
+              </div>
+              <div class="bg-[#07090e] p-2 sm:p-2.5 rounded border border-[#1a2233]">
+                <div class="text-xl sm:text-3xl font-mono-tactical font-black text-white" id="hud-countdown-mins">00</div>
+                <div class="text-[9px] font-tactical text-slate-400 font-bold tracking-wider mt-0.5">MINUTOS</div>
+              </div>
+              <div class="bg-[#07090e] p-2 sm:p-2.5 rounded border border-[#1a2233]">
+                <div class="text-xl sm:text-3xl font-mono-tactical font-black text-slate-200" id="hud-countdown-secs">00</div>
+                <div class="text-[9px] font-tactical text-slate-500 font-bold tracking-wider mt-0.5">SEGUNDOS</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- HUD: SEQUÊNCIA (STREAK) & ALERTA DE CONSTÂNCIA (A3) -->
+          <div id="hud-streak-banner" class="tactical-card p-3 rounded-lg border border-[#1e2738] bg-[#0c1017] flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+              <div id="streak-icon-box" class="w-9 h-9 rounded bg-amber-950/50 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+                <i class="fa-solid fa-fire-flame-curved text-base"></i>
+              </div>
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-xs font-tactical font-bold text-slate-100">SEQUÊNCIA ATUAL: <span id="streak-current-days" class="font-mono-tactical text-amber-400">0</span> DIA(S)</span>
+                  <span class="tactical-pill bg-[#131a26] text-slate-300 border border-[#232f46] text-[9px]">RECORDE: <span id="streak-best-days">0</span>d</span>
+                  <span class="text-[10px] font-mono-tactical text-slate-500" id="streak-last-date">Último plantão: --</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5" id="streak-alert-msg">Analisando constância operacional...</p>
+              </div>
+            </div>
+            <button onclick="switchTab('timer')" class="px-3 py-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shrink-0">
+              <i class="fa-solid fa-bolt text-xs"></i>
+              <span>BATER PONTO HOJE</span>
+            </button>
+          </div>
+
+          <!-- BANNER DO CICLO TÁTICO (PRÓXIMA MISSÃO AUTOMÁTICA PONDERADA - A1) -->
+          <div class="tactical-card p-3 rounded-lg border border-[#1e2738] bg-[#0c1017] space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-slate-300 shrink-0">
+                  <i class="fa-solid fa-arrows-spin text-sm"></i>
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-[9px] font-mono-tactical text-slate-400 font-bold uppercase tracking-wider">PRÓXIMA MISSÃO DO CICLO (PONDERADO)</span>
+                    <span class="tactical-pill bg-[#131a26] text-amber-300 border border-[#232f46] text-[8px]" id="hud-cycle-reason">Calculando ciclo...</span>
+                  </div>
+                  <h3 class="text-xs font-bold text-slate-100 font-tactical" id="hud-cycle-subject">Carregando disciplina...</h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5" id="hud-cycle-topic">Tópico recomendado do edital</p>
+                </div>
+              </div>
+
+              <button id="hud-btn-start-cycle" class="px-3.5 py-1.5 bg-[#172030] hover:bg-[#202b40] text-slate-100 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 border border-[#28364e] transition">
+                <i class="fa-solid fa-play text-xs text-emerald-400"></i>
+                <span>INICIAR MISSÃO DO CICLO</span>
+              </button>
+            </div>
+            <!-- Fila Ponderada Top 4 -->
+            <div id="hud-cycle-queue" class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#151d2b] text-[10px]"></div>
+          </div>
+
+          <!-- Key Indicators (Cards) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            
+            <!-- Card 1: Today Hours -->
+            <div class="tactical-card p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+              <div class="flex justify-between items-start mb-1.5">
+                <span class="text-[11px] font-mono-tactical text-slate-400">HORAS HOJE</span>
+                <span class="w-6 h-6 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-slate-400">
+                  <i class="fa-solid fa-clock text-xs"></i>
+                </span>
+              </div>
+              <div class="text-xl sm:text-2xl font-bold font-mono-tactical text-slate-100" id="stat-today-hours">0h 00m</div>
+              <div class="w-full bg-[#080b11] h-1 rounded-full overflow-hidden mt-2 mb-1 border border-[#182030]">
+                <div id="stat-today-bar" class="bg-slate-300 h-full w-0 transition-all duration-300"></div>
+              </div>
+              <div class="text-[10px] text-slate-500 truncate" id="stat-today-sub">Meta diária: 4h 00m</div>
+            </div>
+
+            <!-- Card 2: Week Hours -->
+            <div class="tactical-card p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+              <div class="flex justify-between items-start mb-1.5">
+                <span class="text-[11px] font-mono-tactical text-slate-400">ESTA SEMANA</span>
+                <span class="w-6 h-6 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-slate-400">
+                  <i class="fa-solid fa-calendar-week text-xs"></i>
+                </span>
+              </div>
+              <div class="text-xl sm:text-2xl font-bold font-mono-tactical text-slate-100" id="stat-week-hours">0h 00m</div>
+              <div class="w-full bg-[#080b11] h-1 rounded-full overflow-hidden mt-2 mb-1 border border-[#182030]">
+                <div id="stat-week-bar" class="bg-slate-300 h-full w-0 transition-all duration-300"></div>
+              </div>
+              <div class="text-[10px] text-slate-500 truncate" id="stat-week-sub">Meta semanal: 25h 00m</div>
+            </div>
+
+            <!-- Card 3: Questions / Balística -->
+            <div class="tactical-card p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+              <div class="flex justify-between items-start mb-1.5">
+                <span class="text-[11px] font-mono-tactical text-slate-400">PRECISÃO DE TIRO</span>
+                <span class="w-6 h-6 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-emerald-400">
+                  <i class="fa-solid fa-bullseye text-xs"></i>
+                </span>
+              </div>
+              <div class="flex items-baseline space-x-2">
+                <div class="text-xl sm:text-2xl font-bold font-mono-tactical text-emerald-400" id="stat-questions-accuracy">0%</div>
+                <div class="text-[10px] font-mono-tactical text-slate-400">(<span id="stat-questions-count">0</span> q.)</div>
+              </div>
+              <div class="w-full bg-[#080b11] h-1 rounded-full overflow-hidden mt-2 mb-1 border border-[#182030]">
+                <div id="stat-questions-bar" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+              </div>
+              <div class="text-[10px] text-slate-500 truncate" id="stat-questions-sub">0 Acertos / 0 Erros</div>
+            </div>
+
+            <!-- Card 4: Revisions Urgent -->
+            <div class="tactical-card p-3 rounded-lg bg-[#0c1017] border border-[#182030] cursor-pointer hover:border-[#384869] transition" onclick="switchTab('revisions')">
+              <div class="flex justify-between items-start mb-1.5">
+                <span class="text-[11px] font-mono-tactical text-slate-400">REVISÕES URGENTES</span>
+                <span id="stat-revisions-pill" class="tactical-pill bg-[#131a26] text-emerald-400 border border-[#232f46] text-[8px]">EM DIA</span>
+              </div>
+              <div class="text-xl sm:text-2xl font-bold font-mono-tactical text-slate-100" id="stat-revisions-count">0</div>
+              <div class="w-full bg-[#080b11] h-1 rounded-full overflow-hidden mt-2 mb-1 border border-[#182030]">
+                <div class="bg-rose-500 h-full w-full"></div>
+              </div>
+              <div class="text-[10px] text-slate-500 truncate" id="stat-revisions-sub">0 hoje • 0 atrasadas</div>
+            </div>
+
+          </div>
+
+          <!-- Secondary Tactical Badges (Honra, TAF, Lei Seca, Erros, Redações) -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+            <!-- Approvals Mini Widget -->
+            <div class="tactical-card p-2.5 rounded-lg bg-[#0c1017] border border-[#182030] flex items-center justify-between cursor-pointer hover:border-[#2f3e59] transition" onclick="switchTab('conquistas')">
+              <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-amber-400 shrink-0">
+                  <i class="fa-solid fa-trophy text-[11px]"></i>
+                </div>
+                <div>
+                  <div class="text-[9px] font-mono-tactical text-slate-400 font-bold uppercase">HONRA</div>
+                  <div class="text-xs font-bold text-slate-100"><span id="stat-approvals-count">0</span> Vitórias</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+            </div>
+
+            <!-- TAF Mini Widget -->
+            <div class="tactical-card p-2.5 rounded-lg bg-[#0c1017] border border-[#182030] flex items-center justify-between cursor-pointer hover:border-[#2f3e59] transition" onclick="switchTab('taf')">
+              <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-rose-400 shrink-0">
+                  <i class="fa-solid fa-person-running text-[11px]"></i>
+                </div>
+                <div>
+                  <div class="text-[9px] font-mono-tactical text-slate-400 font-bold uppercase">TAF FÍSICO</div>
+                  <span id="stat-taf-pill" class="tactical-pill bg-[#131a26] text-emerald-400 border border-[#232f46] text-[8px] font-bold inline-block whitespace-nowrap">APTO</span>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+            </div>
+
+            <!-- Law Reading Mini Widget -->
+            <div class="tactical-card p-2.5 rounded-lg bg-[#0c1017] border border-[#182030] flex items-center justify-between cursor-pointer hover:border-[#2f3e59] transition" onclick="switchTab('leiseca')">
+              <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-purple-400 shrink-0">
+                  <i class="fa-solid fa-scale-balanced text-[11px]"></i>
+                </div>
+                <div>
+                  <div class="text-[9px] font-mono-tactical text-slate-400 font-bold uppercase">LEI SECA</div>
+                  <div class="text-xs font-bold text-slate-100"><span id="stat-law-count">0</span> Artigos</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+            </div>
+
+            <!-- Caderno de Erros Mini Widget -->
+            <div class="tactical-card p-2.5 rounded-lg bg-[#0c1017] border border-[#182030] flex items-center justify-between cursor-pointer hover:border-[#2f3e59] transition" onclick="switchTab('cadernoerros')">
+              <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-rose-400 shrink-0">
+                  <i class="fa-solid fa-book-skull text-[11px]"></i>
+                </div>
+                <div>
+                  <div class="text-[9px] font-mono-tactical text-slate-400 font-bold uppercase">ERROS ATIVOS</div>
+                  <div class="text-xs font-bold text-slate-100"><span id="stat-errors-count">0</span> Pegadinhas</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+            </div>
+
+            <!-- Discursivas Mini Widget -->
+            <div class="tactical-card p-2.5 rounded-lg bg-[#0c1017] border border-[#182030] flex items-center justify-between cursor-pointer hover:border-[#2f3e59] transition" onclick="switchTab('discursivas')">
+              <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 rounded bg-[#131a26] border border-[#232f46] flex items-center justify-center text-cyan-400 shrink-0">
+                  <i class="fa-solid fa-pen-nib text-[11px]"></i>
+                </div>
+                <div>
+                  <div class="text-[9px] font-mono-tactical text-slate-400 font-bold uppercase">REDAÇÕES</div>
+                  <div class="text-xs font-bold text-slate-100"><span id="stat-essays-count">0</span> Treinadas</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+            </div>
+          </div>
+
+          <!-- Quick Action Bar -->
+          <div class="flex flex-wrap items-center justify-between gap-2.5 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-bolt text-slate-400 text-xs"></i>
+              <span class="text-xs font-tactical font-bold tracking-wider text-slate-200">AÇÕES RÁPIDAS:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button onclick="switchTab('timer')" class="bg-slate-100 hover:bg-white text-slate-950 px-2.5 py-1 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+                <i class="fa-solid fa-play text-xs text-emerald-600"></i>
+                <span>INICIAR CRONÔMETRO</span>
+              </button>
+              <button onclick="openManualSessionModal()" class="bg-[#141b27] hover:bg-[#1e2738] text-slate-300 border border-[#232f44] px-2.5 py-1 rounded text-xs font-tactical flex items-center space-x-1.5 transition">
+                <i class="fa-solid fa-pen-to-square text-xs text-slate-400"></i>
+                <span>REGISTRAR HORAS MANUAIS</span>
+              </button>
+              <button onclick="switchTab('revisions')" class="bg-[#141b27] hover:bg-[#1e2738] text-slate-300 border border-[#232f44] px-2.5 py-1 rounded text-xs font-tactical flex items-center space-x-1.5 transition">
+                <i class="fa-solid fa-clock-rotate-left text-xs text-slate-400"></i>
+                <span>REVISÕES DO DIA</span>
+              </button>
+              <button onclick="exportBackup()" class="bg-[#141b27] hover:bg-[#1e2738] text-slate-300 border border-[#232f44] px-2.5 py-1 rounded text-xs font-tactical flex items-center space-x-1.5 transition" title="Exportar backup dos dados em JSON">
+                <i class="fa-solid fa-download text-xs text-slate-400"></i>
+                <span>BACKUP</span>
+              </button>
+              <button onclick="openBackupModal()" class="bg-[#141b27] hover:bg-[#1e2738] text-slate-300 border border-[#232f44] px-2.5 py-1 rounded text-xs font-tactical flex items-center space-x-1.5 transition" title="Restaurar backup existente em JSON">
+                <i class="fa-solid fa-upload text-xs text-slate-400"></i>
+                <span>RESTAURAR</span>
+              </button>
+              <button onclick="printTacticalReport()" class="bg-[#141b27] hover:bg-[#1e2738] text-slate-300 border border-[#232f44] px-2.5 py-1 rounded text-xs font-tactical flex items-center space-x-1.5 transition" title="Imprimir boletim de estudos">
+                <i class="fa-solid fa-print text-xs text-emerald-400"></i>
+                <span>IMPRIMIR BOLETIM</span>
+              </button>
+              <button onclick="openLanAccessModal()" class="bg-[#141b27] hover:bg-[#1e2738] text-indigo-300 border border-[#232f44] px-2.5 py-1 rounded text-xs font-tactical flex items-center space-x-1.5 transition" title="Acessar no celular ou tablet pela rede Wi-Fi">
+                <i class="fa-solid fa-mobile-screen-button text-xs text-indigo-400"></i>
+                <span>ACESSO WI-FI / CELULAR</span>
+              </button>
+              <button onclick="openResetDashboardModal()" class="bg-[#1a141b] hover:bg-[#261922] text-rose-300 border border-[#3b1d28] px-2.5 py-1 rounded text-xs font-tactical flex items-center space-x-1.5 transition" title="Zerar horas e reiniciar métricas">
+                <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                <span>ZERAR PAINEL</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- PLANO DO DIA AUTOMÁTICO (A2) -->
+          <div class="tactical-card p-3.5 rounded-lg border border-[#1e2738] bg-[#0c1017] space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2.5">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-clipboard-list text-amber-400 text-sm"></i>
+                <div>
+                  <h3 class="text-xs font-tactical font-bold tracking-wider text-slate-100">PLANO DO DIA AUTOMÁTICO</h3>
+                  <p class="text-[11px] text-slate-400">Informe quanto tempo você tem hoje e o sistema monta os blocos pela prioridade do edital.</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="loadDailyPlan(60)" class="daily-plan-preset px-2 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-[#232f44] rounded text-[11px] font-mono-tactical text-slate-300 transition">1h</button>
+                <button onclick="loadDailyPlan(120)" class="daily-plan-preset px-2 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-amber-500/40 rounded text-[11px] font-mono-tactical text-amber-300 font-bold transition">2h</button>
+                <button onclick="loadDailyPlan(180)" class="daily-plan-preset px-2 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-[#232f44] rounded text-[11px] font-mono-tactical text-slate-300 transition">3h</button>
+                <button onclick="loadDailyPlan(240)" class="daily-plan-preset px-2 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-[#232f44] rounded text-[11px] font-mono-tactical text-slate-300 transition">4h</button>
+                <div class="flex items-center space-x-1 ml-1">
+                  <input type="number" id="daily-plan-minutes-input" value="120" min="30" max="720" step="15" class="w-16 bg-[#07090e] border border-[#232f44] rounded px-2 py-1 text-[11px] font-mono-tactical text-slate-100 text-center" title="Tempo disponível em minutos">
+                  <span class="text-[10px] font-mono-tactical text-slate-500">min</span>
+                  <button onclick="loadDailyPlan()" class="px-2.5 py-1 bg-slate-100 hover:bg-white text-slate-950 rounded text-[11px] font-tactical font-bold transition">MONTAR</button>
+                </div>
+              </div>
+            </div>
+            <div id="daily-plan-blocks" class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
+            
+            <!-- Left Chart: Last 14 Days Activity (7 cols) -->
+            <div class="lg:col-span-7 tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-chart-column text-slate-300"></i>
+                  <span class="text-xs font-tactical font-bold tracking-wider text-slate-200">HISTÓRICO DE ESTUDOS (ÚLTIMOS 14 DIAS)</span>
+                </div>
+                <span class="text-[10px] font-mono-tactical text-slate-500">HORAS LÍQUIDAS</span>
+              </div>
+              <div class="h-56 w-full">
+                <canvas id="activityChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Right Chart: Subject Distribution (5 cols) -->
+            <div class="lg:col-span-5 tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-chart-pie text-slate-300"></i>
+                  <span class="text-xs font-tactical font-bold tracking-wider text-slate-200">DISTRIBUIÇÃO POR DISCIPLINA</span>
+                </div>
+                <span class="text-[10px] font-mono-tactical text-slate-500">TEMPO TOTAL</span>
+              </div>
+              <div class="h-56 w-full flex items-center justify-center">
+                <canvas id="subjectsChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- MAPA DE FRAQUEZAS POR TÓPICO (A4) -->
+          <div class="tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-crosshairs text-rose-400"></i>
+                <span class="text-xs font-tactical font-bold tracking-wider text-slate-200">MAPA DE FRAQUEZAS POR TÓPICO (&lt; 60% ACERTO)</span>
+              </div>
+              <span class="text-[10px] font-mono-tactical text-slate-500">ENVIE TÓPICOS CRÍTICOS DIRETO PARA REVISÃO</span>
+            </div>
+            <div id="weak-topics-list" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Recent Study Sessions Timeline -->
+          <div class="tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-list-check text-slate-400"></i>
+                <span class="text-xs font-tactical font-bold tracking-wider text-slate-200">ÚLTIMOS PLANTÕES DE ESTUDOS REGISTRADOS</span>
+              </div>
+              <div class="flex items-center space-x-3">
+                <a href="/api/export/sessions.csv" download class="text-xs bg-[#141b27] hover:bg-[#1e2738] text-slate-200 px-2.5 py-1 rounded border border-[#232f44] flex items-center space-x-1.5 transition" title="Exportar histórico de sessões para Excel">
+                  <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                  <span>EXPORTAR CSV</span>
+                </a>
+                <button onclick="switchTab('subjects')" class="text-xs font-tactical text-slate-400 hover:text-white transition">
+                  VER TODAS AS MATÉRIAS →
+                </button>
+              </div>
+            </div>
+            <div class="space-y-2.5" id="recent-sessions-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: TIMER / POMODORO ==================== -->
+        <section id="tab-timer" class="tab-content-panel hidden space-y-4">
+          
+          <div class="tactical-card p-4 sm:p-5 rounded-lg border border-[#182030] bg-[#0c1017] text-center">
+            
+            <!-- Mode Switcher -->
+            <div class="flex justify-center mb-4">
+              <div class="inline-flex rounded-lg bg-[#07090e] p-1 border border-[#182030]">
+                <button id="timer-mode-stopwatch" class="px-3 py-1 rounded text-xs font-tactical font-semibold bg-[#182338] text-white border border-[#2b3d5c] transition">
+                  <i class="fa-solid fa-stopwatch mr-1.5"></i> CRONÔMETRO LIVRE
+                </button>
+                <button id="timer-mode-pomodoro" class="px-3 py-1 rounded text-xs font-tactical font-semibold text-slate-400 hover:text-white transition">
+                  <i class="fa-solid fa-hourglass-half mr-1.5"></i> POMODORO TÁTICO
+                </button>
+              </div>
+            </div>
+
+            <!-- Pomodoro Presets (Hidden by default) -->
+            <div id="pomodoro-presets-container" class="hidden flex justify-center space-x-2.5 mb-4">
+              <button id="pomo-preset-50" class="px-2.5 py-1 rounded border border-[#2e4063] text-xs font-mono-tactical text-slate-200 bg-[#141b27]">
+                50 MIN FOCO / 10 MIN PAUSA
+              </button>
+              <button id="pomo-preset-25" class="px-2.5 py-1 rounded border border-[#182030] text-xs font-mono-tactical text-slate-400 bg-[#0c1017]">
+                25 MIN FOCO / 5 MIN PAUSA
+              </button>
+            </div>
+
+            <!-- Subject & Topic Pickers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-lg mx-auto mb-5 text-left">
+              <div>
+                <label class="block text-[11px] font-tactical text-slate-400 mb-1">DISCIPLINA OPERACIONAL</label>
+                <select id="timer-subject-select" class="w-full bg-[#07090e] border border-[#182030] rounded-lg px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200 focus:border-[#384c70] focus:outline-none">
+                  <option value="">-- SELECIONE A DISCIPLINA --</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-tactical text-slate-400 mb-1">TÓPICO DO EDITAL</label>
+                <select id="timer-topic-select" class="w-full bg-[#07090e] border border-[#182030] rounded-lg px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200 focus:border-[#384c70] focus:outline-none">
+                  <option value="">-- SELECIONE O TÓPICO (OPCIONAL) --</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Timer Big Display -->
+            <div class="my-4">
+              <div class="text-[10px] font-mono-tactical text-slate-400 tracking-widest uppercase mb-1" id="timer-session-label">
+                CRONÔMETRO LIVRE OPERACIONAL
+              </div>
+              <div class="timer-digits text-5xl sm:text-6xl font-bold tracking-tight text-white mb-4 select-none" id="timer-clock-display">
+                00:00:00
+              </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex flex-wrap items-center justify-center gap-2.5 mb-5">
+              <button id="timer-btn-start" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-xs font-tactical font-bold flex items-center space-x-1.5 border border-emerald-500/40 shadow transition">
+                <i class="fa-solid fa-play"></i>
+                <span>INICIAR PLANTÃO</span>
+              </button>
+              
+              <button id="timer-btn-pause" class="hidden px-5 py-2 bg-amber-700 hover:bg-amber-600 text-white rounded text-xs font-tactical font-bold flex items-center space-x-1.5 border border-amber-500/40 shadow transition">
+                <i class="fa-solid fa-pause"></i>
+                <span>PAUSAR TURNO</span>
+              </button>
+
+              <button id="timer-btn-reset" class="px-3.5 py-2 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical font-semibold border border-[#232f44] transition">
+                <i class="fa-solid fa-rotate-left mr-1"></i> REINICIAR
+              </button>
+
+              <button id="timer-btn-save" class="px-4 py-2 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold border border-white flex items-center space-x-1.5 shadow transition">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>ENCERRAR E SALVAR MISSÃO</span>
+              </button>
+            </div>
+
+            <!-- Live Questions Counter (Balística em Combate) -->
+            <div class="max-w-md mx-auto bg-[#07090e] p-3 rounded-lg border border-[#182030]">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-tactical text-slate-400 font-semibold tracking-wider">RESOLUÇÃO DE QUESTÕES DO TURNO</span>
+                <span class="text-xs font-mono-tactical text-slate-300 font-bold" id="timer-accuracy-display">0% de Precisão</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <button id="btn-add-correct" class="p-2.5 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-800 rounded-lg text-emerald-300 font-mono-tactical text-xs font-bold flex items-center justify-center space-x-2 transition">
+                  <i class="fa-solid fa-plus-circle text-emerald-400"></i>
+                  <span>ACERTO (+1) : <span id="timer-questions-correct">0</span></span>
+                </button>
+                <button id="btn-add-incorrect" class="p-2.5 bg-rose-950/60 hover:bg-rose-900/60 border border-rose-800 rounded-lg text-rose-300 font-mono-tactical text-xs font-bold flex items-center justify-center space-x-2 transition">
+                  <i class="fa-solid fa-minus-circle text-rose-400"></i>
+                  <span>ERRO (+1) : <span id="timer-questions-incorrect">0</span></span>
+                </button>
+              </div>
+              <div class="mt-2 text-right">
+                <button id="btn-reset-questions" class="text-[10px] text-slate-500 hover:text-slate-400 font-mono-tactical">
+                  Zerar contagem deste turno
+                </button>
+              </div>
+            </div>
+
+            <!-- Modo Foco Sonoro Tático (Web Audio API Synthesizer) -->
+            <div class="max-w-md mx-auto mt-4 bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center space-x-3">
+                <button id="btn-toggle-ambient" onclick="toggleAmbientSound()" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-center transition shadow" title="Ligar/Desligar Áudio Tático de Foco">
+                  <i id="ambient-play-icon" class="fa-solid fa-play text-xs text-blue-400"></i>
+                </button>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs font-tactical font-semibold text-slate-200">ÁUDIO DE HIPERFOCO</span>
+                    <div id="ambient-soundwave-anim" class="hidden flex items-center space-x-0.5 h-4">
+                      <span class="sound-bar"></span>
+                      <span class="sound-bar"></span>
+                      <span class="sound-bar"></span>
+                      <span class="sound-bar"></span>
+                      <span class="sound-bar"></span>
+                    </div>
+                  </div>
+                  <div class="text-[10px] text-slate-500 font-mono-tactical">100% sintetizado offline</div>
+                </div>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <select id="ambient-type-select" onchange="onAmbientTypeChange()" class="bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs font-mono-tactical text-slate-300 focus:outline-none">
+                  <option value="brown">Ruído Marrom (Deep Focus)</option>
+                  <option value="white">Ruído Branco (Bloqueio)</option>
+                  <option value="rain">Chuva Tática</option>
+                  <option value="binaural">40Hz Binaural (Gama)</option>
+                </select>
+                <div class="flex items-center space-x-1" title="Volume">
+                  <i class="fa-solid fa-volume-low text-[10px] text-slate-500"></i>
+                  <input type="range" id="ambient-vol-slider" min="0.05" max="0.7" step="0.05" value="0.25" oninput="onAmbientVolChange(this.value)" class="w-16 accent-blue-500 cursor-pointer">
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Platform Launcher Dock in Timer -->
+            <div class="mt-6 pt-5 border-t border-slate-800/80 max-w-xl mx-auto">
+              <div class="flex items-center justify-between mb-2.5">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-bolt text-amber-400 text-xs"></i>
+                  <span class="text-[11px] font-tactical text-slate-400 font-semibold tracking-wider">ARSENAL: ABRIR BANCO DE QUESTÕES OU AULAS</span>
+                </div>
+                <button onclick="switchTab('arsenal')" class="text-[11px] font-tactical text-blue-400 hover:underline">
+                  VER TODOS →
+                </button>
+              </div>
+              <div class="flex items-center justify-center flex-wrap gap-2" id="timer-quick-platforms-dock">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: SUBJECTS (DOSSIÊ DE MATÉRIAS) ==================== -->
+        <section id="tab-subjects" class="tab-content-panel hidden space-y-4">
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <h2 class="text-sm font-bold font-tactical text-slate-100">DOSSIÊ DE DISCIPLINAS & EDITAL VERTICALIZADO</h2>
+              <p class="text-xs text-slate-400">Acompanhe seu progresso por tópicos, teoria, resumos e resolução de questões.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="openImportEditalModal()" class="bg-[#141b27] hover:bg-[#1e2738] text-amber-300 border border-amber-500/40 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition" title="Colar conteúdo programático do edital para criar matérias e tópicos mantendo suas horas">
+                <i class="fa-solid fa-file-import text-xs"></i>
+                <span>IMPORTAR EDITAL</span>
+              </button>
+              <button onclick="openAddSubjectModal()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>NOVA DISCIPLINA</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Subjects Accordion Container -->
+          <div id="subjects-accordion-container" class="space-y-3">
+            <!-- Dynamically populated -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: REVISIONS (PROTOCOLO ESPAÇADO) ==================== -->
+        <section id="tab-revisions" class="tab-content-panel hidden space-y-4">
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <h2 class="text-sm font-bold font-tactical text-slate-100">PROTOCOLO DE RETENÇÃO TÁTICA (REVISÕES ESPAÇADAS)</h2>
+              <p class="text-xs text-slate-400">Curva do Esquecimento de Ebbinghaus: 24h &bull; 7 Dias &bull; 15 Dias &bull; 30 Dias.</p>
+            </div>
+            <button onclick="openAddRevisionModal()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span>AGENDAR REVISÃO MANUAL</span>
+            </button>
+          </div>
+
+          <!-- Overdue Alert Section -->
+          <div id="revisions-overdue-section" class="hidden">
+            <div class="flex items-center space-x-2 mb-3">
+              <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+              <span class="text-xs font-tactical font-bold text-rose-400 tracking-wider">REVISÕES ATRASADAS (ALTA PRIORIDADE)</span>
+            </div>
+            <div id="revisions-overdue-list"></div>
+          </div>
+
+          <!-- Today Section -->
+          <div>
+            <div class="flex items-center space-x-2 mb-3">
+              <i class="fa-solid fa-calendar-day text-blue-400"></i>
+              <span class="text-xs font-tactical font-bold text-slate-200 tracking-wider">PROGRAMADAS PARA HOJE</span>
+            </div>
+            <div id="revisions-today-list"></div>
+          </div>
+
+          <!-- Upcoming Section -->
+          <div>
+            <div class="flex items-center space-x-2 mb-3">
+              <i class="fa-solid fa-calendar-days text-indigo-400"></i>
+              <span class="text-xs font-tactical font-bold text-slate-200 tracking-wider">PRÓXIMOS 7 DIAS</span>
+            </div>
+            <div id="revisions-upcoming-list"></div>
+          </div>
+
+          <!-- Completed History Section -->
+          <div>
+            <div class="flex items-center space-x-2 mb-3">
+              <i class="fa-solid fa-circle-check text-emerald-400"></i>
+              <span class="text-xs font-tactical font-bold text-slate-400 tracking-wider">HISTÓRICO DE REVISÕES CUMPRIDAS</span>
+            </div>
+            <div id="revisions-completed-list"></div>
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: NEWS FEED (NOTÍCIAS POLICIAIS) ==================== -->
+        <section id="tab-news" class="tab-content-panel hidden space-y-4">
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-sm font-bold font-tactical text-slate-100">CENTRAL DE INTELIGÊNCIA & NOTÍCIAS POLICIAIS</h2>
+                <span class="tactical-pill bg-[#131a26] text-emerald-400 border border-[#232f46] text-[9px]">100% OPERAÇÕES & EDITAIS</span>
+              </div>
+              <p class="text-xs text-slate-400">Informativos exclusivos sobre autorizações, bancas, editais e cronogramas de forças policiais.</p>
+            </div>
+            <button id="btn-sync-news" onclick="syncLiveNews()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+              <i class="fa-solid fa-arrows-rotate text-xs"></i>
+              <span>ATUALIZAR NOTÍCIAS</span>
+            </button>
+          </div>
+
+          <!-- Priority Filter for News -->
+          <div class="flex flex-wrap items-center gap-1.5 p-2.5 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <span class="text-[10px] font-mono-tactical text-slate-400 uppercase tracking-wider mr-1.5 flex items-center space-x-1">
+              <i class="fa-solid fa-filter text-[9px] text-slate-500"></i>
+              <span>FILTRAR NOTÍCIAS:</span>
+            </span>
+            <button onclick="filterNewsPriority('all', this)" class="news-prio-btn px-2.5 py-1 rounded text-xs font-tactical font-bold bg-[#182338] text-white border border-[#2b3d5c] transition">TODAS</button>
+            <button onclick="filterNewsPriority('alta', this)" class="news-prio-btn px-2.5 py-1 rounded text-xs font-tactical bg-[#111722] text-rose-300 hover:text-white border border-rose-900/60 transition flex items-center space-x-1">
+              <span class="w-2 h-2 rounded-full bg-rose-500 inline-block animate-pulse"></span>
+              <span>🔴 MAIOR: EDITAIS ABERTOS</span>
+            </button>
+            <button onclick="filterNewsPriority('media', this)" class="news-prio-btn px-2.5 py-1 rounded text-xs font-tactical bg-[#111722] text-amber-300 hover:text-white border border-amber-900/60 transition flex items-center space-x-1">
+              <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+              <span>⚡ MÉDIA: IMINENTES & BANCAS</span>
+            </button>
+            <button onclick="filterNewsPriority('normal', this)" class="news-prio-btn px-2.5 py-1 rounded text-xs font-tactical bg-[#111722] text-slate-300 hover:text-white border border-[#182030] transition flex items-center space-x-1">
+              <span class="w-2 h-2 rounded-full bg-slate-500 inline-block"></span>
+              <span>📋 NORMAL: COMISSÕES & TAF</span>
+            </button>
+          </div>
+
+          <!-- News Items List -->
+          <div id="news-feed-container" class="space-y-2.5">
+            <!-- Dynamically populated -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: SIMULATIONS (COMBATE) ==================== -->
+        <section id="tab-simulations" class="tab-content-panel hidden space-y-4">
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <h2 class="text-sm font-bold font-tactical text-slate-100">MÉTRICAS DE COMBATE & HISTÓRICO DE SIMULADOS</h2>
+              <p class="text-xs text-slate-400">Monitore sua pontuação líquida, nota de corte estimada e evolução de simulados.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <a href="/api/export/simulations.csv" download class="bg-[#141b27] hover:bg-[#1e2738] text-slate-200 px-2.5 py-1.5 rounded text-xs font-tactical flex items-center space-x-1.5 border border-[#232f44] transition" title="Exportar simulados para Excel">
+                <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                <span>EXPORTAR CSV</span>
+              </a>
+              <button onclick="openAddSimulationModal()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>REGISTRAR SIMULADO</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Análise de Simulados: Evolução vs Nota de Corte & Desempenho por Matéria (A6) -->
+          <div id="simulations-analytics-panel" class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 hidden">
+            <div class="lg:col-span-7 tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-chart-line text-amber-400 text-xs"></i>
+                  <span class="text-xs font-tactical font-bold text-slate-200">EVOLUÇÃO VS. NOTA DE CORTE</span>
+                </div>
+                <div class="flex items-center space-x-3 text-[10px] font-mono-tactical">
+                  <span class="text-slate-400">Média: <strong class="text-blue-400" id="sim-avg-score">0</strong></span>
+                  <span class="text-slate-400">Corte Ref.: <strong class="text-amber-400" id="sim-ref-cutoff">--</strong></span>
+                </div>
+              </div>
+              <div class="h-48 w-full">
+                <canvas id="simulationsChart"></canvas>
+              </div>
+            </div>
+
+            <div class="lg:col-span-5 tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+              <div class="flex items-center justify-between mb-2.5">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-ranking-star text-emerald-400 text-xs"></i>
+                  <span class="text-xs font-tactical font-bold text-slate-200">DESEMPENHO POR MATÉRIA</span>
+                </div>
+                <span class="text-[10px] font-mono-tactical text-slate-500">ACUMULADO</span>
+              </div>
+              <div id="simulations-subject-analytics" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Simulations List -->
+          <div id="simulations-list" class="space-y-2.5">
+            <!-- Dynamically populated -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: ARSENAL (PLATAFORMAS & VÍDEOS) ==================== -->
+        <section id="tab-arsenal" class="tab-content-panel hidden space-y-4">
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-sm font-bold font-tactical text-slate-100">ARSENAL TÁTICO: BANCOS DE QUESTÕES & VIDEOAULAS</h2>
+                <span class="tactical-pill bg-[#131a26] text-slate-300 border border-[#232f46] text-[9px]">CENTRAL DE LINKS</span>
+              </div>
+              <p class="text-xs text-slate-400">Centralize todos os sites que você utiliza para assistir videoaulas, resolver questões e jurisprudência.</p>
+            </div>
+            <button onclick="openAddPlatformModal()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span>ADICIONAR AO ARSENAL</span>
+            </button>
+          </div>
+
+          <!-- Category Filters -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button onclick="filterPlatforms('all', this)" class="platform-filter-btn px-2.5 py-1 rounded text-xs font-tactical font-bold bg-[#182338] text-white border border-[#2b3d5c] transition">TODAS</button>
+            <button onclick="filterPlatforms('Banco de Questões', this)" class="platform-filter-btn px-2.5 py-1 rounded text-xs font-tactical bg-[#111722] text-slate-400 hover:text-white border border-[#182030] transition">BANCOS DE QUESTÕES</button>
+            <button onclick="filterPlatforms('Videoaulas & Cursos', this)" class="platform-filter-btn px-2.5 py-1 rounded text-xs font-tactical bg-[#111722] text-slate-400 hover:text-white border border-[#182030] transition">VIDEOAULAS & CURSOS</button>
+            <button onclick="filterPlatforms('Jurisprudência', this)" class="platform-filter-btn px-2.5 py-1 rounded text-xs font-tactical bg-[#111722] text-slate-400 hover:text-white border border-[#182030] transition">JURISPRUDÊNCIA & LEIS</button>
+            <button onclick="filterPlatforms('Simulados', this)" class="platform-filter-btn px-2.5 py-1 rounded text-xs font-tactical bg-[#111722] text-slate-400 hover:text-white border border-[#182030] transition">SIMULADOS</button>
+          </div>
+
+          <!-- Platforms Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="platforms-grid-container">
+            <!-- Dynamically populated -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: CONQUISTAS (QUADRO DE HONRA) ==================== -->
+        <section id="tab-conquistas" class="tab-content-panel hidden space-y-4">
+          <div class="flex items-center space-x-1.5 bg-[#0c1017] p-1.5 rounded-lg border border-[#182030] w-fit">
+            <button onclick="switchTab('conquistas')" class="px-3 py-1 rounded text-xs font-tactical font-bold bg-slate-100 text-slate-950 transition"><i class="fa-solid fa-trophy mr-1.5"></i>QUADRO DE HONRA</button>
+            <button onclick="switchTab('taf')" class="px-3 py-1 rounded text-xs font-tactical font-semibold text-slate-400 hover:text-white hover:bg-[#151c2a] transition"><i class="fa-solid fa-person-running mr-1.5"></i>MÓDULO TAF (FÍSICO)</button>
+          </div>
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-sm font-bold font-tactical text-amber-300">QUADRO DE HONRA & VITÓRIAS ANTERIORES</h2>
+                <span class="tactical-pill bg-[#131a26] text-amber-400 border border-[#232f46] text-[9px]">HALL DA FAMA</span>
+              </div>
+              <p class="text-xs text-slate-400">Registre todas as suas aprovações, classificações, notas de corte e fases superadas.</p>
+            </div>
+            <button onclick="openAddApprovalModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span>REGISTRAR APROVAÇÃO</span>
+            </button>
+          </div>
+
+          <!-- Approvals Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5" id="approvals-grid-container">
+            <!-- Dynamically populated -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: TAF OPERACIONAL (TREINO FÍSICO) ==================== -->
+        <section id="tab-taf" class="tab-content-panel hidden space-y-4">
+          <div class="flex items-center space-x-1.5 bg-[#0c1017] p-1.5 rounded-lg border border-[#182030] w-fit">
+            <button onclick="switchTab('conquistas')" class="px-3 py-1 rounded text-xs font-tactical font-semibold text-slate-400 hover:text-white hover:bg-[#151c2a] transition"><i class="fa-solid fa-trophy mr-1.5"></i>QUADRO DE HONRA</button>
+            <button onclick="switchTab('taf')" class="px-3 py-1 rounded text-xs font-tactical font-bold bg-slate-100 text-slate-950 transition"><i class="fa-solid fa-person-running mr-1.5"></i>MÓDULO TAF (FÍSICO)</button>
+          </div>
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-sm font-bold font-tactical text-slate-100">MÓDULO TAF: TESTE DE APTIDÃO FÍSICA OPERACIONAL</h2>
+                <span class="tactical-pill bg-[#131a26] text-rose-400 border border-[#232f46] text-[9px]">PRONTIDÃO FÍSICA</span>
+              </div>
+              <p class="text-xs text-slate-400">Treine o corpo junto com a mente: barra fixa, corrida de 12 min, abdominal e natação padrão PF/PC.</p>
+            </div>
+            <button onclick="openAddTafModal()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span>REGISTRAR TREINO TAF</span>
+            </button>
+          </div>
+
+          <!-- Latest Test Evaluation Summary -->
+          <div id="taf-latest-summary-card"></div>
+
+          <!-- History of Workouts -->
+          <div class="tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-clipboard-list text-slate-400"></i>
+                <span class="text-xs font-tactical font-bold tracking-wider text-slate-200">HISTÓRICO DE TREINAMENTOS FÍSICOS</span>
+              </div>
+              <span class="text-[10px] font-mono-tactical text-slate-500">BOLETIM DE EVOLUÇÃO</span>
+            </div>
+            <div id="taf-history-list"></div>
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: RADAR DE LEI SECA ==================== -->
+        <section id="tab-leiseca" class="tab-content-panel hidden space-y-4">
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-sm font-bold font-tactical text-slate-100">RADAR DE LEI SECA & ARTIGOS LIDOS</h2>
+                <span class="tactical-pill bg-[#131a26] text-purple-400 border border-[#232f46] text-[9px]">LETRA DA LEI</span>
+              </div>
+              <p class="text-xs text-slate-400">Meta diária de leitura: CF/88, Código Penal, CPP e Leis Especiais.</p>
+            </div>
+            <button onclick="openAddLawModal()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span>REGISTRAR LEITURA</span>
+            </button>
+          </div>
+
+          <!-- Quick Increment Buttons Bar -->
+          <div class="tactical-card p-2.5 rounded-lg border border-[#182030] bg-[#0c1017] flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center space-x-2 text-xs font-tactical text-slate-300">
+              <i class="fa-solid fa-bolt text-slate-400 text-xs"></i>
+              <span>REGISTRO RÁPIDO (+):</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button onclick="quickAddArticles(10, 'Estatuto da PC-TO (Lei 1.654/06)')" class="px-2.5 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-amber-500/30 text-amber-300 rounded text-xs font-tactical transition">
+                +10 Art. Estatuto PC-TO
+              </button>
+              <button onclick="quickAddArticles(10, 'Constituição Federal (CF/88)')" class="px-2.5 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-[#232f44] rounded text-xs font-tactical text-slate-200 transition">
+                +10 Art. CF/88
+              </button>
+              <button onclick="quickAddArticles(15, 'Código Penal (CP)')" class="px-2.5 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-[#232f44] rounded text-xs font-tactical text-slate-200 transition">
+                +15 Art. CP
+              </button>
+              <button onclick="quickAddArticles(15, 'Código de Processo Penal (CPP)')" class="px-2.5 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-[#232f44] rounded text-xs font-tactical text-slate-200 transition">
+                +15 Art. CPP
+              </button>
+              <button onclick="quickAddArticles(10, 'Legislação Especial Policial')" class="px-2.5 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-[#232f44] rounded text-xs font-tactical text-slate-200 transition">
+                +10 Art. Leg. Especial
+              </button>
+              <button onclick="quickAddArticles(5, 'Direitos Humanos (DUDH / Pacto)')" class="px-2.5 py-1 bg-[#141b27] hover:bg-[#1e2738] border border-pink-500/30 text-pink-300 rounded text-xs font-tactical transition">
+                +5 Art. Dir. Humanos
+              </button>
+            </div>
+          </div>
+
+          <!-- Total Metrics Counter -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="tactical-card p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+              <div class="text-[10px] font-mono-tactical text-slate-400 mb-1">ARTIGOS LIDOS HOJE</div>
+              <div class="text-2xl font-mono-tactical font-black text-slate-100" id="law-today-total-display">0</div>
+              <div class="text-[10px] text-slate-500 mt-0.5">Meta sugerida: 25 a 30 artigos/dia</div>
+            </div>
+
+            <div class="tactical-card p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+              <div class="text-[10px] font-mono-tactical text-slate-400 mb-1">TOTAL ACUMULADO DE ARTIGOS LIDOS</div>
+              <div class="text-2xl font-mono-tactical font-black text-slate-100" id="law-all-total-display">0</div>
+              <div class="text-[10px] text-slate-500 mt-0.5">Acúmulo total na preparação</div>
+            </div>
+          </div>
+
+          <!-- Breakdown by Code -->
+          <div class="tactical-card p-3 rounded-lg border border-[#182030] bg-[#0c1017]">
+            <div class="text-xs font-tactical font-bold text-slate-200 mb-2.5">DISTRIBUIÇÃO POR CÓDIGO / LEGISLAÇÃO</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="law-breakdown-container"></div>
+          </div>
+
+          <!-- History of Readings -->
+          <div class="tactical-card p-3 rounded-lg border border-[#182030] bg-[#0c1017]">
+            <div class="text-xs font-tactical font-bold text-slate-200 mb-2.5">HISTÓRICO RECENTE DE LEITURA</div>
+            <div id="law-history-list"></div>
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: CADERNO DE ERROS (DOSSIÊ DE VULNERABILIDADES) ==================== -->
+        <section id="tab-cadernoerros" class="tab-content-panel hidden space-y-4">
+          <div class="flex items-center space-x-1.5 bg-[#0c1017] p-1.5 rounded-lg border border-[#182030] w-fit">
+            <button onclick="switchTab('cadernoerros')" class="px-3 py-1 rounded text-xs font-tactical font-bold bg-slate-100 text-slate-950 transition"><i class="fa-solid fa-book-skull mr-1.5"></i>CADERNO DE ERROS</button>
+            <button onclick="switchTab('discursivas')" class="px-3 py-1 rounded text-xs font-tactical font-semibold text-slate-400 hover:text-white hover:bg-[#151c2a] transition"><i class="fa-solid fa-pen-nib mr-1.5"></i>OFICINA DE REDAÇÕES</button>
+          </div>
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-sm font-bold font-tactical text-slate-100">CADERNO DE ERROS OPERACIONAL</h2>
+                <span class="tactical-pill bg-[#131a26] text-rose-400 border border-[#232f46] text-[9px]">BLINDAGEM TÁTICA</span>
+              </div>
+              <p class="text-xs text-slate-400">Catalogue as pegadinhas das bancas e seus erros para nunca mais perder pontos.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <a href="/api/export/errors.csv" download class="bg-[#141b27] hover:bg-[#1e2738] text-slate-200 px-2.5 py-1.5 rounded text-xs font-tactical flex items-center space-x-1.5 border border-[#232f44] transition" title="Exportar caderno de erros para Excel">
+                <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                <span>EXPORTAR CSV</span>
+              </a>
+              <button onclick="openAddErrorModal()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>NOVO ERRO CATALOGADO</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filters Bar -->
+          <div class="tactical-card p-2.5 rounded-lg border border-[#182030] bg-[#0c1017] flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center space-x-2 text-xs font-tactical text-slate-300">
+              <i class="fa-solid fa-filter text-slate-400 text-xs"></i>
+              <span>FILTRAR VULNERABILIDADES:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <div>
+                <select id="filter-error-banca" onchange="triggerErrorFilters()" class="bg-[#07090e] border border-[#182030] rounded px-2 py-1 text-xs text-slate-300 font-mono-tactical focus:outline-none">
+                  <option value="all">Todas as Bancas</option>
+                  <option value="Cebraspe">Cebraspe</option>
+                  <option value="FGV">FGV</option>
+                  <option value="Vunesp">Vunesp</option>
+                  <option value="FCC">FCC</option>
+                  <option value="IBFC">IBFC</option>
+                  <option value="Instituto AOCP">Instituto AOCP</option>
+                </select>
+              </div>
+              <div>
+                <select id="filter-error-reason" onchange="triggerErrorFilters()" class="bg-[#07090e] border border-[#182030] rounded px-2 py-1 text-xs text-slate-300 font-mono-tactical focus:outline-none">
+                  <option value="all">Todos os Motivos</option>
+                  <option value="Pegadinha de Banca">Pegadinha de Banca</option>
+                  <option value="Falta de Atenção">Falta de Atenção</option>
+                  <option value="Lacuna Teórica">Lacuna Teórica</option>
+                  <option value="Interpretação de Texto">Interpretação de Texto</option>
+                </select>
+              </div>
+              <div>
+                <select id="filter-error-mastered" onchange="triggerErrorFilters()" class="bg-[#07090e] border border-[#182030] rounded px-2 py-1 text-xs text-slate-300 font-mono-tactical focus:outline-none">
+                  <option value="all">Todos os Status</option>
+                  <option value="false">Pendentes de Domínio</option>
+                  <option value="true">Já Dominados (Superados)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Errors List Container -->
+          <div id="errors-list-container" class="space-y-2.5">
+            <!-- Dynamically populated -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB: OFICINA DE DISCURSIVAS & REDAÇÕES ==================== -->
+        <section id="tab-discursivas" class="tab-content-panel hidden space-y-4">
+          <div class="flex items-center space-x-1.5 bg-[#0c1017] p-1.5 rounded-lg border border-[#182030] w-fit">
+            <button onclick="switchTab('cadernoerros')" class="px-3 py-1 rounded text-xs font-tactical font-semibold text-slate-400 hover:text-white hover:bg-[#151c2a] transition"><i class="fa-solid fa-book-skull mr-1.5"></i>CADERNO DE ERROS</button>
+            <button onclick="switchTab('discursivas')" class="px-3 py-1 rounded text-xs font-tactical font-bold bg-slate-100 text-slate-950 transition"><i class="fa-solid fa-pen-nib mr-1.5"></i>OFICINA DE REDAÇÕES</button>
+          </div>
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-[#0c1017] border border-[#182030]">
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-sm font-bold font-tactical text-slate-100">OFICINA DE DISCURSIVAS & REDAÇÕES POLICIAIS</h2>
+                <span class="tactical-pill bg-[#131a26] text-slate-300 border border-[#232f46] text-[9px]">PADRÃO POLICIAL</span>
+              </div>
+              <p class="text-xs text-slate-400">Simulador de 60 minutos, banco de temas quentes (PF, PRF, PC, PM) e notas.</p>
+            </div>
+            <button onclick="openAddEssayModal()" class="bg-slate-100 hover:bg-white text-slate-950 px-3 py-1.5 rounded text-xs font-tactical font-bold flex items-center space-x-1.5 transition shadow">
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span>REGISTRAR NOTA</span>
+            </button>
+          </div>
+
+          <!-- Hot Essay Prompts Bank -->
+          <div class="tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-fire text-amber-400"></i>
+                <span class="text-xs font-tactical font-bold tracking-wider text-slate-200">BANCO DE TEMAS QUENTES PARA REDAÇÕES POLICIAIS</span>
+              </div>
+              <span class="text-[10px] font-mono-tactical text-slate-500">SIMULE EM 60 MINUTOS</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="essay-prompts-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- History of Practiced Essays -->
+          <div class="tactical-card p-3.5 rounded-lg border border-[#182030] bg-[#0c1017]">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-book-bookmark text-slate-400"></i>
+                <span class="text-xs font-tactical font-bold tracking-wider text-slate-200">HISTÓRICO DE REDAÇÕES PRATICADAS</span>
+              </div>
+              <span class="text-[10px] font-mono-tactical text-slate-500">BOLETIM DE DISCURSIVAS</span>
+            </div>
+            <div id="essays-list-container" class="space-y-2.5">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- MODAL: SAVE SESSION (TIMER FINISH) -->
+  <div id="modal-save-session" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-xs font-bold font-tactical text-slate-100">ENCERRAR E SALVAR TURNO DE ESTUDO</h3>
+        <button onclick="closeModal('modal-save-session')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">DURAÇÃO DO TURNO (MINUTOS)</label>
+          <input type="number" id="modal-save-duration" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-emerald-400 mb-1">QUESTÕES CERTAS</label>
+            <input type="number" id="modal-save-correct" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-emerald-300" value="0">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-rose-400 mb-1">QUESTÕES ERRADAS</label>
+            <input type="number" id="modal-save-incorrect" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-rose-300" value="0">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ANOTAÇÕES / PONTOS CHAVE DA SESSÃO</label>
+          <textarea id="modal-save-notes" rows="2" placeholder="Ex: Artigo 5º incisos mais cobrados pelo Cebraspe..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+
+        <div class="flex items-center space-x-2 pt-1">
+          <input type="checkbox" id="modal-save-autorevision" checked class="rounded bg-[#07090e] border-[#182030] text-slate-200 focus:ring-0">
+          <label for="modal-save-autorevision" class="text-xs text-slate-300">Agendar automaticamente Revisão 24h para amanhã</label>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-save-session')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitSaveSession()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR TURNO (QAP!)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MANUAL STUDY SESSION ENTRY -->
+  <div id="modal-manual-session" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-xs font-bold font-tactical text-slate-100">REGISTRAR ESTUDO RETROATIVO</h3>
+        <button onclick="closeModal('modal-manual-session')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">DISCIPLINA</label>
+          <select id="manual-modal-subject" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA</label>
+            <input type="date" id="manual-modal-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">HORAS ESTUDADAS</label>
+            <input type="number" step="0.5" id="manual-modal-hours" placeholder="ex: 2.5" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-emerald-400 mb-1">QUESTÕES CERTAS</label>
+            <input type="number" id="manual-modal-correct" value="0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-emerald-300">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-rose-400 mb-1">QUESTÕES ERRADAS</label>
+            <input type="number" id="manual-modal-incorrect" value="0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-rose-300">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ANOTAÇÕES DO ESTUDO</label>
+          <textarea id="manual-modal-notes" rows="2" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-manual-session')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitManualSession()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD SUBJECT -->
+  <div id="modal-add-subject" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-xs font-bold font-tactical text-slate-100">CADASTRAR NOVA DISCIPLINA</h3>
+        <button onclick="closeModal('modal-add-subject')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOME DA DISCIPLINA</label>
+          <input type="text" id="modal-subj-name" placeholder="Ex: Criminologia, Medicina Legal, Balística..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">CATEGORIA</label>
+            <select id="modal-subj-category" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="Jurídica">Jurídica</option>
+              <option value="Básica">Básica</option>
+              <option value="Específica">Específica</option>
+              <option value="Operacional">Operacional</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">COR IDENTIFICADORA</label>
+            <input type="color" id="modal-subj-color" value="#3b82f6" class="w-full h-8 bg-[#07090e] border border-[#182030] rounded p-1">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">META DE HORAS ESTIMADA</label>
+            <input type="number" id="modal-subj-target" value="50" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-amber-400 mb-1">PESO NO EDITAL (0.5 a 5)</label>
+            <input type="number" step="0.5" min="0.5" max="5" id="modal-subj-weight" value="2.0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-amber-300 font-bold">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-subject')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddSubject()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">CADASTRAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD TOPIC -->
+  <div id="modal-add-topic" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-xs font-bold font-tactical text-slate-100">ADICIONAR TÓPICO DO EDITAL</h3>
+        <button onclick="closeModal('modal-add-topic')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-slate-400 mb-3" id="modal-add-topic-subj-name">Disciplina</p>
+      <input type="hidden" id="modal-add-topic-subj-id">
+
+      <div>
+        <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOME DO TÓPICO / PONTO DO EDITAL</label>
+        <input type="text" id="modal-add-topic-name" placeholder="Ex: Prisão em Flagrante e Audiência de Custódia..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-topic')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddTopic()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">ADICIONAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD REVISION -->
+  <div id="modal-add-revision" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-xs font-bold font-tactical text-slate-100">AGENDAR REVISÃO ESPAÇADA</h3>
+        <button onclick="closeModal('modal-add-revision')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">DISCIPLINA</label>
+          <select id="modal-rev-subject" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical"></select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">TÍTULO DA REVISÃO</label>
+          <input type="text" id="modal-rev-title" placeholder="Ex: Revisar crimes contra a administração pública..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA PROGRAMADA</label>
+            <input type="date" id="modal-rev-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">CICLO / INTERVALO</label>
+            <select id="modal-rev-stage" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="1">24 Horas (R1)</option>
+              <option value="2">7 Dias (R2)</option>
+              <option value="3">15 Dias (R3)</option>
+              <option value="4">30 Dias (R4)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">OBSERVAÇÕES / FLASHCARDS</label>
+          <textarea id="modal-rev-notes" rows="2" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-revision')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddRevision()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">AGENDAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD SIMULATION (A6 - Com Nota de Corte & Desempenho por Matéria) -->
+  <div id="modal-add-simulation" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-lg w-full max-h-[90vh] overflow-y-auto bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-xs font-bold font-tactical text-slate-100">REGISTRAR SIMULADO DE COMBATE</h3>
+        <button onclick="closeModal('modal-add-simulation')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-2.5">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">TÍTULO / BANCA DO SIMULADO</label>
+          <input type="text" id="modal-sim-title" placeholder="Ex: Simulado Caveira 01 - PC-TO Agente" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA</label>
+            <input type="date" id="modal-sim-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">CONCURSO ALVO</label>
+            <input type="text" id="modal-sim-target" placeholder="PC-TO Agente" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">TOTAL ITENS</label>
+            <input type="number" id="modal-sim-total" value="100" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-emerald-400 mb-1">ACERTOS</label>
+            <input type="number" id="modal-sim-correct" value="70" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-emerald-300">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-rose-400 mb-1">ERROS</label>
+            <input type="number" id="modal-sim-wrong" value="20" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-rose-300">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-300 mb-1">NOTA LÍQUIDA</label>
+            <input type="number" step="0.5" id="modal-sim-score" placeholder="ex: 60.0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-100 font-bold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-amber-400 mb-1">NOTA DE CORTE ESTIMADA</label>
+            <input type="number" step="0.5" id="modal-sim-cutoff" placeholder="ex: 68.0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-amber-300 font-bold">
+          </div>
+        </div>
+
+        <!-- Desempenho por Matéria (A6) -->
+        <div class="p-2.5 rounded bg-[#07090e] border border-[#182030] space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-tactical font-bold text-slate-300 uppercase">DESEMPENHO POR MATÉRIA (OPCIONAL)</span>
+            <button type="button" onclick="addSimBreakdownRow('add')" class="text-[10px] px-2 py-0.5 bg-[#141b27] hover:bg-[#1e2738] text-amber-300 border border-[#232f44] rounded font-tactical">
+              + ADICIONAR MATÉRIA
+            </button>
+          </div>
+          <div id="modal-sim-breakdown-rows" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">PONTOS DE ATENÇÃO / OBSERVAÇÕES</label>
+          <textarea id="modal-sim-notes" rows="2" placeholder="Ex: Reforçar informática e estatuto PC-TO..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-simulation')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddSimulation()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR SIMULADO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD PLATFORM -->
+  <div id="modal-add-platform" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-slate-300">
+          <i class="fa-solid fa-laptop-code text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">ADICIONAR PLATAFORMA AO ARSENAL</h3>
+        </div>
+        <button onclick="closeModal('modal-add-platform')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOME DA PLATAFORMA / SITE</label>
+          <input type="text" id="modal-platform-title" placeholder="Ex: Tec Concursos, QConcursos, AlfaCon, Canal YouTube..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">LINK DE ACESSO (URL)</label>
+          <input type="text" id="modal-platform-url" placeholder="https://www.tecconcursos.com.br" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">CATEGORIA</label>
+            <select id="modal-platform-category" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="Banco de Questões">Banco de Questões</option>
+              <option value="Videoaulas & Cursos">Videoaulas & Cursos</option>
+              <option value="Jurisprudência">Jurisprudência</option>
+              <option value="Simulados">Simulados</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">COR IDENTIFICADORA</label>
+            <input type="color" id="modal-platform-color" value="#3b82f6" class="w-full h-8 bg-[#07090e] border border-[#182030] rounded p-1">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ÍCONE</label>
+          <select id="modal-platform-icon" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical">
+            <option value="fa-list-check">Lista de Questões (fa-list-check)</option>
+            <option value="fa-video">Vídeo / Aulas (fa-video)</option>
+            <option value="fa-play">Play / YouTube (fa-play)</option>
+            <option value="fa-graduation-cap">Graduação / Curso (fa-graduation-cap)</option>
+            <option value="fa-gavel">Martelo / Jurisprudência (fa-gavel)</option>
+            <option value="fa-scale-balanced">Balança da Justiça (fa-scale-balanced)</option>
+            <option value="fa-skull">Caveira Operacional (fa-skull)</option>
+            <option value="fa-shield-halved">Escudo Policial (fa-shield-halved)</option>
+            <option value="fa-globe">Globo / Web (fa-globe)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ANOTAÇÕES / OBJETIVO DE ESTUDO</label>
+          <textarea id="modal-platform-notes" rows="2" placeholder="Ex: Resolver 30 questões de Direito Penal por dia com filtro Cebraspe..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-platform')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddPlatform()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">ADICIONAR AO ARSENAL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RESET DASHBOARD -->
+  <div id="modal-reset-dashboard" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#3b1d28] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-rose-500">
+          <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">ZERAR PAINEL / REINICIAR ESTATÍSTICAS</h3>
+        </div>
+        <button onclick="closeModal('modal-reset-dashboard')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+        Selecione o que você deseja zerar para iniciar uma nova semana ou ciclo, mantendo suas disciplinas e tópicos cadastrados.
+      </p>
+
+      <div class="space-y-2.5 bg-[#07090e] p-3 rounded-lg border border-[#182030] mb-4 text-xs">
+        <label class="flex items-start space-x-2.5 cursor-pointer">
+          <input type="checkbox" id="reset-chk-sessions" checked class="mt-0.5 rounded bg-[#111722] border-[#222f44] text-rose-600 focus:ring-0">
+          <div>
+            <span class="font-bold text-slate-200">Zerar Horas e Sessões de Estudo</span>
+            <p class="text-[10px] text-slate-500 mt-0.5">Zera horas hoje, semanais, acumuladas e contador de questões.</p>
+          </div>
+        </label>
+
+        <label class="flex items-start space-x-2.5 cursor-pointer pt-2 border-t border-[#182030]">
+          <input type="checkbox" id="reset-chk-revisions" class="mt-0.5 rounded bg-[#111722] border-[#222f44] text-rose-600 focus:ring-0">
+          <div>
+            <span class="font-bold text-slate-200">Limpar Revisões Espaçadas</span>
+            <p class="text-[10px] text-slate-500 mt-0.5">Remove os agendamentos de revisões pendentes e concluídas.</p>
+          </div>
+        </label>
+
+        <label class="flex items-start space-x-2.5 cursor-pointer pt-2 border-t border-[#182030]">
+          <input type="checkbox" id="reset-chk-topics" class="mt-0.5 rounded bg-[#111722] border-[#222f44] text-rose-600 focus:ring-0">
+          <div>
+            <span class="font-bold text-slate-200">Desmarcar Checklists dos Tópicos</span>
+            <p class="text-[10px] text-slate-500 mt-0.5">Desmarca 'Teoria', 'Resumo' e 'Questões' de todos os tópicos.</p>
+          </div>
+        </label>
+
+        <label class="flex items-start space-x-2.5 cursor-pointer pt-2 border-t border-[#182030]">
+          <input type="checkbox" id="reset-chk-sims" class="mt-0.5 rounded bg-[#111722] border-[#222f44] text-rose-600 focus:ring-0">
+          <div>
+            <span class="font-bold text-slate-200">Zerar Histórico de Simulados</span>
+            <p class="text-[10px] text-slate-500 mt-0.5">Apaga os registros e notas de simulados anteriores.</p>
+          </div>
+        </label>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-reset-dashboard')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitResetDashboard()" class="px-4 py-1.5 bg-rose-700 hover:bg-rose-600 text-white rounded text-xs font-tactical font-bold shadow border border-rose-500/40">CONFIRMAR E ZERAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PROFILE & SETTINGS -->
+  <div id="modal-profile" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-xs font-bold font-tactical text-slate-100">CONFIGURAÇÕES OPERACIONAIS DO AGENTE</h3>
+        <button onclick="closeModal('modal-profile')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOME / IDENTIFICADOR DE COMBATE</label>
+          <input type="text" id="modal-profile-name" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">CARGO / MISSÃO ALVO</label>
+          <input type="text" id="modal-profile-target" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">META DIÁRIA (HORAS)</label>
+            <input type="number" step="0.5" id="modal-profile-daily" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">META SEMANAL (HORAS)</label>
+            <input type="number" id="modal-profile-weekly" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+        </div>
+        <div class="flex items-center space-x-2 pt-1">
+          <input type="checkbox" id="modal-profile-sound" class="rounded bg-[#07090e] border-[#182030] text-slate-200 focus:ring-0">
+          <label for="modal-profile-sound" class="text-xs text-slate-300">Efeitos sonoros táticos ativados (bipes de rádio)</label>
+        </div>
+
+        <div class="pt-2 border-t border-[#182030] space-y-2">
+          <label class="block text-[11px] font-tactical text-amber-400">TROCAR TRILHA / CARREIRA PRONTA</label>
+          <div class="flex space-x-2">
+            <select id="modal-profile-career" class="flex-1 bg-[#07090e] border border-[#182030] rounded px-2 py-1 text-xs text-slate-200">
+              <option value="PM">Polícia Militar (PM)</option>
+              <option value="PRF">Polícia Rodoviária Federal (PRF)</option>
+              <option value="PF">Polícia Federal (PF)</option>
+              <option value="PC">Polícia Civil (PC)</option>
+              <option value="PP">Polícia Penal (PP)</option>
+              <option value="CUSTOM">Personalizada</option>
+            </select>
+            <button type="button" onclick="applyCareerTemplate()" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded text-[11px] font-tactical font-bold">APLICAR</button>
+          </div>
+          <p class="text-[10px] text-slate-500">Preserva suas horas já estudadas e adiciona as matérias da trilha escolhida.</p>
+        </div>
+
+        <div class="pt-2 border-t border-[#182030] space-y-2">
+          <label class="block text-[11px] font-tactical text-slate-400">ALTERAR SENHA DE ACESSO</label>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="password" id="modal-pwd-current" placeholder="Senha atual" class="bg-[#07090e] border border-[#182030] rounded px-2 py-1 text-xs text-slate-200">
+            <input type="password" id="modal-pwd-new" placeholder="Nova senha" class="bg-[#07090e] border border-[#182030] rounded px-2 py-1 text-xs text-slate-200">
+          </div>
+          <button type="button" onclick="submitChangePassword()" class="text-[11px] px-2.5 py-1 bg-[#141b27] hover:bg-[#1e2738] text-slate-200 border border-[#232f44] rounded font-tactical">ATUALIZAR SENHA</button>
+        </div>
+
+        <div class="pt-2 border-t border-[#182030]">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-slate-400">Reinicialização Operacional</span>
+            <button type="button" onclick="closeModal('modal-profile'); openResetDashboardModal();" class="text-xs text-rose-400 hover:text-rose-300 flex items-center space-x-1 font-tactical">
+              <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
+              <span>ZERAR DADOS DO PAINEL</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-profile')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitProfileUpdate()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR ALTERAÇÕES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT COUNTDOWN (DIA D) -->
+  <div id="modal-edit-countdown" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-rose-400">
+          <i class="fa-solid fa-hourglass-start text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">CONFIGURAR OPERAÇÃO DIA D (CONCURSO ALVO)</h3>
+        </div>
+        <button onclick="closeModal('modal-edit-countdown')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOME DA OPERAÇÃO / CONCURSO ALVO</label>
+          <input type="text" id="modal-countdown-title" placeholder="Ex: Operação Polícia Federal - Agente" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA DA PROVA (DIA D)</label>
+            <input type="date" id="modal-countdown-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">HORÁRIO DOS PORTÕES</label>
+            <input type="time" id="modal-countdown-time" value="08:00" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-edit-countdown')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitUpdateCountdown()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">ATIVAR CONTAGEM</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD APPROVAL (QUADRO DE HONRA) -->
+  <div id="modal-add-approval" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-amber-400">
+          <i class="fa-solid fa-trophy text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">REGISTRAR CONQUISTA / APROVAÇÃO</h3>
+        </div>
+        <button onclick="closeModal('modal-add-approval')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">CONCURSO / ÓRGÃO</label>
+          <input type="text" id="modal-approval-contest" placeholder="Ex: PMESP, PC-SP, Guarda Municipal..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">CARGO</label>
+            <input type="text" id="modal-approval-role" placeholder="Ex: Soldado, Escrivão..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">ANO DO CONCURSO</label>
+            <input type="number" id="modal-approval-year" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">COLOCAÇÃO / POSIÇÃO</label>
+            <input type="text" id="modal-approval-pos" placeholder="Ex: 48º Lugar ou CR" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-emerald-400 mb-1">NOTA / PONTOS</label>
+            <input type="text" id="modal-approval-score" placeholder="Ex: 78.5 / 100" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-emerald-300">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">STATUS DA CONQUISTA</label>
+          <select id="modal-approval-status" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+            <option value="Aprovado">Aprovado</option>
+            <option value="Classificado">Classificado</option>
+            <option value="Apto no TAF">Apto no TAF</option>
+            <option value="Classificado & Apto no TAF">Classificado & Apto no TAF</option>
+            <option value="Convocado">Convocado</option>
+            <option value="Excedente / CR">Excedente / CR</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ANOTAÇÕES / LIÇÕES DESTA VITÓRIA</label>
+          <textarea id="modal-approval-notes" rows="2" placeholder="Ex: Prova com excelente desempenho em Penal e RLM..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-approval')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddApproval()" class="px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded text-xs font-tactical font-bold shadow">ETERNIZAR NO QUADRO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD TAF WORKOUT -->
+  <div id="modal-add-taf" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-rose-400">
+          <i class="fa-solid fa-person-running text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">REGISTRAR SIMULADO / TREINO TAF</h3>
+        </div>
+        <button onclick="closeModal('modal-add-taf')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA DO TREINO</label>
+            <input type="date" id="modal-taf-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">SEXO / PADRÃO</label>
+            <select id="modal-taf-gender" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="1">Masculino (Cebraspe/PF)</option>
+              <option value="0">Feminino (Cebraspe/PF)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-300 mb-1">BARRA FIXA (REPS)</label>
+            <input type="number" id="modal-taf-pull" value="5" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-100">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-emerald-400 mb-1">CORRIDA 12 MIN (METROS)</label>
+            <input type="number" step="50" id="modal-taf-run" value="2400" placeholder="ex: 2400" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">ABDOMINAL (1 MIN)</label>
+            <input type="number" id="modal-taf-sit" value="40" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">FLEXÃO (REPS)</label>
+            <input type="number" id="modal-taf-push" value="35" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-cyan-400 mb-1">NATAÇÃO 50M (SEG)</label>
+            <input type="number" step="0.5" id="modal-taf-swim" value="0" placeholder="ex: 45" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">OBSERVAÇÕES DO TREINAMENTO</label>
+          <textarea id="modal-taf-notes" rows="2" placeholder="Ex: Pista úmida, pace de 5:00/km na corrida..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-taf')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddTaf()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR BOLETIM TAF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD LAW READING -->
+  <div id="modal-add-law" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-purple-400">
+          <i class="fa-solid fa-scale-balanced text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">REGISTRAR LEITURA DE LEI SECA</h3>
+        </div>
+        <button onclick="closeModal('modal-add-law')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA</label>
+            <input type="date" id="modal-law-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-purple-400 mb-1">QTD DE ARTIGOS LIDOS</label>
+            <input type="number" id="modal-law-articles" value="20" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-100 font-bold">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">CÓDIGO / LEGISLAÇÃO</label>
+          <select id="modal-law-code" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+            <option value="Estatuto da PC-TO (Lei 1.654/06)">Estatuto da PC-TO (Lei 1.654/06)</option>
+            <option value="Estatuto dos Servidores TO (Lei 1.818/07)">Estatuto dos Servidores TO (Lei 1.818/07)</option>
+            <option value="Constituição Federal (CF/88)">Constituição Federal (CF/88)</option>
+            <option value="Código Penal (CP)">Código Penal (CP)</option>
+            <option value="Código de Processo Penal (CPP)">Código de Processo Penal (CPP)</option>
+            <option value="Direitos Humanos (DUDH / Pacto San José)">Direitos Humanos (DUDH / Pacto San José)</option>
+            <option value="Lei de Drogas (11.343/06)">Lei de Drogas (11.343/06)</option>
+            <option value="Estatuto do Desarmamento (10.826/03)">Estatuto do Desarmamento (10.826/03)</option>
+            <option value="Abuso de Autoridade (13.869/19)">Abuso de Autoridade (13.869/19)</option>
+            <option value="Crimes Hediondos (8.072/90)">Crimes Hediondos (8.072/90)</option>
+            <option value="Organizações Criminosas (12.850/13)">Organizações Criminosas (12.850/13)</option>
+            <option value="Lei Maria da Penha (11.340/06)">Lei Maria da Penha (11.340/06)</option>
+            <option value="Lei de Tortura (9.455/97)">Lei de Tortura (9.455/97)</option>
+            <option value="Outra Legislação">Outra Legislação</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ARTIGOS LIDOS / OBSERVAÇÕES</label>
+          <textarea id="modal-law-notes" rows="2" placeholder="Ex: Artigos 1º ao 20 - Princípios fundamentais..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-law')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddLaw()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR LEITURA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD ERROR (CADERNO DE ERROS) -->
+  <div id="modal-add-error" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-lg w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-rose-400">
+          <i class="fa-solid fa-book-skull text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">CATALOGAR ERRO / PEGADINHA DE BANCA</h3>
+        </div>
+        <button onclick="closeModal('modal-add-error')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">DISCIPLINA</label>
+          <select id="modal-error-subject" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical"></select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">BANCA EXAMINADORA</label>
+            <select id="modal-error-banca" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="Cebraspe">Cebraspe</option>
+              <option value="FGV">FGV</option>
+              <option value="Vunesp">Vunesp</option>
+              <option value="FCC">FCC</option>
+              <option value="IBFC">IBFC</option>
+              <option value="Instituto AOCP">Instituto AOCP</option>
+              <option value="Outra">Outra Banca</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">MOTIVO DO ERRO</label>
+            <select id="modal-error-reason" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="Pegadinha de Banca">Pegadinha de Banca</option>
+              <option value="Falta de Atenção">Falta de Atenção</option>
+              <option value="Lacuna Teórica">Lacuna Teórica</option>
+              <option value="Interpretação de Texto">Interpretação de Texto</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">CÓDIGO / REFERÊNCIA DA QUESTÃO (OPCIONAL)</label>
+          <input type="text" id="modal-error-ref" placeholder="Ex: Q219045 TecConcursos ou Cebraspe PF 2021" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ENUNCIADO DA QUESTÃO (RESUMO)</label>
+          <textarea id="modal-error-statement" rows="2" placeholder="Ex: No que tange aos crimes contra o patrimônio..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-amber-400 mb-1">BIZU CORRETIVO (O QUE VOCÊ APRENDEU PARA NUNCA MAIS ERRAR)</label>
+          <textarea id="modal-error-bizu" rows="2.5" placeholder="Ex: Cuidado! O Cebraspe trocou 'furto qualificado mediante fraude' por 'estelionato'..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-amber-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-error')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddError()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">BLINDAR VULNERABILIDADE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD ESSAY (OFICINA DE DISCURSIVAS) -->
+  <div id="modal-add-essay" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-cyan-400">
+          <i class="fa-solid fa-pen-nib text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">REGISTRAR REDAÇÃO DISCURSIVA</h3>
+        </div>
+        <button onclick="closeModal('modal-add-essay')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">TEMA DA REDAÇÃO</label>
+          <input type="text" id="modal-essay-title" placeholder="Ex: O papel da inteligência policial no combate às facções..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA DE PRODUÇÃO</label>
+            <input type="date" id="modal-essay-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">ÓRGÃO / FOCO</label>
+            <select id="modal-essay-agency" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="PF">Polícia Federal (PF)</option>
+              <option value="PRF">Polícia Rodoviária Federal (PRF)</option>
+              <option value="PC">Polícia Civil (PC)</option>
+              <option value="PM">Polícia Militar (PM)</option>
+              <option value="SENAPPEN">SENAPPEN / Penal</option>
+              <option value="Geral">Geral / Outros</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] font-tactical text-emerald-400 mb-1">NOTA</label>
+            <input type="number" step="0.1" id="modal-essay-score" value="18.0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-emerald-300">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOTA MÁXIMA</label>
+            <input type="number" step="0.1" id="modal-essay-max" value="20.0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">LINHAS</label>
+            <input type="number" id="modal-essay-lines" value="30" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">PONTOS DE MELHORIA / CORREÇÃO</label>
+          <textarea id="modal-essay-notes" rows="2" placeholder="Ex: Melhorar conectivos interparágrafos..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-add-essay')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitAddEssay()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR REDAÇÃO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RESTAURAR BACKUP -->
+  <div id="modal-backup-import" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-slate-300">
+          <i class="fa-solid fa-file-import text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">RESTAURAR BACKUP DO SISTEMA</h3>
+        </div>
+        <button onclick="closeModal('modal-backup-import')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="p-2.5 bg-amber-950/20 border border-amber-800/40 rounded text-amber-200 text-xs leading-relaxed">
+          <i class="fa-solid fa-triangle-exclamation mr-1 text-amber-400"></i>
+          <strong>Atenção:</strong> Restaurar um backup substituirá os dados atuais pelo arquivo importado.
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ARQUIVO DE BACKUP (.JSON)</label>
+          <input type="file" id="modal-backup-file" accept=".json" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-tactical file:bg-[#141b27] file:text-slate-200 hover:file:bg-[#1e2738]">
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-backup-import')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitImportBackup()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">RESTAURAR DADOS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ACESSO REDE LOCAL & CELULAR -->
+  <div id="modal-lan-access" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-indigo-400">
+          <i class="fa-solid fa-mobile-screen-button text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">ACESSO NA REDE LOCAL (WI-FI / CELULAR)</h3>
+        </div>
+        <button onclick="closeModal('modal-lan-access')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Você pode acessar e operar o <strong>Além da Meta Concursos</strong> em tempo real no seu celular ou tablet conectado no mesmo Wi-Fi:
+        </p>
+
+        <!-- Dynamic QR Code Card -->
+        <div class="bg-[#07090e] p-3 rounded-lg border border-[#182030] text-center flex flex-col items-center justify-center">
+          <div class="text-[10px] font-mono-tactical text-slate-300 mb-2 font-bold tracking-wider">APONTE A CÂMERA DO CELULAR PARA ACESSAR:</div>
+          <div class="p-2 bg-white rounded inline-block shadow">
+            <img id="lan-qr-code" src="" alt="QR Code de Acesso" class="w-32 h-32 mx-auto">
+          </div>
+          <div class="text-[10px] text-slate-500 mt-2 font-mono-tactical">QR Code gerado com o IP da sua máquina</div>
+        </div>
+
+        <!-- Address Box -->
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ENDEREÇO NA SUA REDE LOCAL (URL)</label>
+          <div class="flex items-center space-x-2">
+            <input type="text" id="lan-url-display" readonly class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-emerald-400 font-bold select-all focus:outline-none">
+            <button onclick="copyLanUrl()" class="px-3 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-200 border border-[#232f44] rounded text-xs font-tactical flex items-center space-x-1 shrink-0 transition" title="Copiar endereço">
+              <i class="fa-solid fa-copy text-xs"></i>
+              <span id="btn-copy-lan-text">COPIAR</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-2.5 bg-[#07090e] border border-[#182030] rounded text-slate-400 text-xs space-y-1 font-mono-tactical">
+          <div class="text-slate-200 font-bold font-tactical flex items-center space-x-1.5">
+            <i class="fa-solid fa-circle-info text-slate-400"></i>
+            <span>CHECKLIST:</span>
+          </div>
+          <div>1. Celular e PC no <strong>mesmo Wi-Fi</strong>.</div>
+          <div>2. Se não abrir, execute <code class="text-amber-400 bg-slate-900 px-1 py-0.5 rounded">liberar_firewall.bat</code> como Admin.</div>
+        </div>
+      </div>
+
+      <div class="flex justify-end mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-lan-access')" class="px-4 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">FECHAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: BUSCA GLOBAL INSTANTÂNEA (CTRL + K) ==================== -->
+  <div id="modal-global-search" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-start justify-center p-4 pt-16 sm:pt-24 hidden" onclick="handleSearchBackdropClick(event)">
+    <div class="tactical-card max-w-2xl w-full bg-[#0c1017] border border-[#232f46] rounded-xl shadow-2xl shadow-black/90 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Search Input Header -->
+      <div class="p-3.5 border-b border-[#182030] flex items-center space-x-3 bg-[#0c1017]">
+        <i class="fa-solid fa-magnifying-glass text-slate-400 text-base"></i>
+        <input type="text" id="global-search-input" placeholder="Buscar tópicos do edital, bizus, erros, concursos, notícias... (digite para pesquisar)" class="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none font-sans" autocomplete="off" oninput="onGlobalSearchInput(this.value)">
+        <kbd class="hidden sm:inline-block bg-[#07090e] px-2 py-0.5 rounded text-[10px] text-slate-400 font-mono-tactical border border-[#182030]">ESC para fechar</kbd>
+        <button onclick="closeModal('modal-global-search')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Quick Category Filter Pills -->
+      <div class="px-3.5 py-2 bg-[#07090e] border-b border-[#182030] flex items-center space-x-1.5 overflow-x-auto text-xs font-tactical">
+        <span class="text-slate-500 text-[10px] uppercase tracking-wider font-mono-tactical">Filtrar:</span>
+        <button onclick="setSearchFilter('all')" class="search-filter-pill px-2.5 py-0.5 rounded text-[11px] transition bg-[#182338] text-white font-semibold border border-[#2b3d5c]" data-filter="all">Tudo</button>
+        <button onclick="setSearchFilter('topic')" class="search-filter-pill px-2.5 py-0.5 rounded text-[11px] transition bg-[#111722] hover:bg-[#1a2333] text-slate-400 border border-[#182030]" data-filter="topic">Dossiê de Matérias</button>
+        <button onclick="setSearchFilter('error')" class="search-filter-pill px-2.5 py-0.5 rounded text-[11px] transition bg-[#111722] hover:bg-[#1a2333] text-slate-400 border border-[#182030]" data-filter="error">Caderno de Erros</button>
+        <button onclick="setSearchFilter('contest')" class="search-filter-pill px-2.5 py-0.5 rounded text-[11px] transition bg-[#111722] hover:bg-[#1a2333] text-slate-400 border border-[#182030]" data-filter="contest">Radar de Editais</button>
+        <button onclick="setSearchFilter('news')" class="search-filter-pill px-2.5 py-0.5 rounded text-[11px] transition bg-[#111722] hover:bg-[#1a2333] text-slate-400 border border-[#182030]" data-filter="news">Notícias</button>
+        <button onclick="setSearchFilter('simulation')" class="search-filter-pill px-2.5 py-0.5 rounded text-[11px] transition bg-[#111722] hover:bg-[#1a2333] text-slate-400 border border-[#182030]" data-filter="simulation">Simulados</button>
+      </div>
+
+      <!-- Results List Box -->
+      <div id="global-search-results" class="max-h-[60vh] overflow-y-auto p-3 space-y-2">
+        <div class="p-8 text-center text-slate-500 font-mono-tactical text-xs">
+          <i class="fa-solid fa-terminal text-2xl text-slate-600 mb-2"></i>
+          <p>DIGITE PELO MENOS 2 CARACTERES PARA INICIAR A VARREDURA TÁTICA NO SISTEMA</p>
+        </div>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="px-3.5 py-2 bg-[#07090e] border-t border-[#182030] text-[10px] font-mono-tactical text-slate-500 flex justify-between items-center">
+        <span>QAP SEARCH RADAR • BUSCA RÁPIDA INTEGRADA</span>
+        <span class="hidden sm:inline">Use <kbd class="bg-[#141b27] px-1 rounded text-slate-400 border border-[#232f44]">Ctrl</kbd> + <kbd class="bg-[#141b27] px-1 rounded text-slate-400 border border-[#232f44]">K</kbd> a qualquer momento</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR TURNO DE ESTUDO -->
+  <div id="modal-edit-session" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-slate-300">
+          <i class="fa-solid fa-pen-to-square text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">EDITAR TURNO DE ESTUDO</h3>
+        </div>
+        <button onclick="closeModal('modal-edit-session')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <input type="hidden" id="modal-edit-session-id">
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">DISCIPLINA</label>
+          <select id="modal-edit-session-subject" onchange="loadEditSessionTopics()" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical"></select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">TÓPICO DO EDITAL (OPCIONAL)</label>
+          <select id="modal-edit-session-topic" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical">
+            <option value="">-- Estudo Geral da Matéria --</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA</label>
+            <input type="date" id="modal-edit-session-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DURAÇÃO (MINUTOS)</label>
+            <input type="number" id="modal-edit-session-duration" min="1" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-100 font-bold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-emerald-400 mb-1">+ ACERTOS</label>
+            <input type="number" id="modal-edit-session-correct" min="0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-emerald-300">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-rose-400 mb-1">+ ERROS</label>
+            <input type="number" id="modal-edit-session-incorrect" min="0" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-rose-300">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ANOTAÇÕES / FEEDBACK OPERACIONAL</label>
+          <textarea id="modal-edit-session-notes" rows="2" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-edit-session')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitEditSession()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR ALTERAÇÕES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR ERRO DO CADERNO -->
+  <div id="modal-edit-error" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-lg w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-rose-400">
+          <i class="fa-solid fa-pen-to-square text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">EDITAR VULNERABILIDADE / ERRO</h3>
+        </div>
+        <button onclick="closeModal('modal-edit-error')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <input type="hidden" id="modal-edit-error-id">
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">DISCIPLINA</label>
+          <select id="modal-edit-error-subject" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical"></select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">BANCA EXAMINADORA</label>
+            <select id="modal-edit-error-banca" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="Cebraspe">Cebraspe</option>
+              <option value="FGV">FGV</option>
+              <option value="Vunesp">Vunesp</option>
+              <option value="FCC">FCC</option>
+              <option value="IBFC">IBFC</option>
+              <option value="Instituto AOCP">Instituto AOCP</option>
+              <option value="Outra">Outra</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">TIPO DE FALHA</label>
+            <select id="modal-edit-error-reason" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="Pegadinha de Banca">Pegadinha de Banca</option>
+              <option value="Falta de Lei Seca">Falta de Lei Seca</option>
+              <option value="Falta de Atenção">Falta de Atenção</option>
+              <option value="Lacuna Teórica">Lacuna Teórica</option>
+              <option value="Interpretação de Texto">Interpretação de Texto</option>
+              <option value="Jurisprudência Inédita">Jurisprudência Inédita</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">CÓDIGO / REFERÊNCIA DA QUESTÃO</label>
+          <input type="text" id="modal-edit-error-ref" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ENUNCIADO DA QUESTÃO / TRECHO DÚBIO</label>
+          <textarea id="modal-edit-error-statement" rows="2" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono-tactical"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-amber-400 mb-1 flex items-center space-x-1">
+            <i class="fa-solid fa-lightbulb text-amber-400"></i>
+            <span>BIZU CORRETIVO DA QUESTÃO</span>
+          </label>
+          <textarea id="modal-edit-error-bizu" rows="2.5" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-amber-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-edit-error')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitEditError()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR ALTERAÇÕES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR SIMULADO -->
+  <div id="modal-edit-simulation" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-lg w-full max-h-[90vh] overflow-y-auto bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-slate-300">
+          <i class="fa-solid fa-pen-to-square text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">EDITAR SIMULADO</h3>
+        </div>
+        <button onclick="closeModal('modal-edit-simulation')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <input type="hidden" id="modal-edit-sim-id">
+
+      <div class="space-y-2.5">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">TÍTULO / BANCA DO SIMULADO</label>
+          <input type="text" id="modal-edit-sim-title" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">DATA</label>
+            <input type="date" id="modal-edit-sim-date" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">CONCURSO ALVO</label>
+            <input type="text" id="modal-edit-sim-target" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">TOTAL ITENS</label>
+            <input type="number" id="modal-edit-sim-total" oninput="calculateEditSimScore()" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-emerald-400 mb-1">ACERTOS</label>
+            <input type="number" id="modal-edit-sim-correct" oninput="calculateEditSimScore()" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-emerald-300">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-rose-400 mb-1">ERROS</label>
+            <input type="number" id="modal-edit-sim-wrong" oninput="calculateEditSimScore()" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-rose-300">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-300 mb-1">NOTA LÍQUIDA</label>
+            <input type="number" step="0.5" id="modal-edit-sim-score" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-100 font-bold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-amber-400 mb-1">NOTA DE CORTE ESTIMADA</label>
+            <input type="number" step="0.5" id="modal-edit-sim-cutoff" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-amber-300 font-bold">
+          </div>
+        </div>
+
+        <div class="p-2.5 rounded bg-[#07090e] border border-[#182030] space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-tactical font-bold text-slate-300 uppercase">DESEMPENHO POR MATÉRIA</span>
+            <button type="button" onclick="addSimBreakdownRow('edit')" class="text-[10px] px-2 py-0.5 bg-[#141b27] hover:bg-[#1e2738] text-amber-300 border border-[#232f44] rounded font-tactical">
+              + ADICIONAR MATÉRIA
+            </button>
+          </div>
+          <div id="modal-edit-sim-breakdown-rows" class="space-y-1.5 max-h-36 overflow-y-auto"></div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">ANOTAÇÕES / PONTOS FRACOS A REFORÇAR</label>
+          <textarea id="modal-edit-sim-notes" rows="2" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-edit-simulation')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitEditSimulation()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR ALTERAÇÕES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR TÓPICO DO EDITAL -->
+  <div id="modal-edit-topic" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-slate-300">
+          <i class="fa-solid fa-pen-to-square text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">EDITAR TÓPICO DO EDITAL</h3>
+        </div>
+        <button onclick="closeModal('modal-edit-topic')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <input type="hidden" id="modal-edit-topic-id">
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOME DO TÓPICO</label>
+          <input type="text" id="modal-edit-topic-name" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOTAS / BIZUS ESPECÍFICOS DO TÓPICO</label>
+          <textarea id="modal-edit-topic-notes" rows="2.5" placeholder="Ex: Foco no artigo 144 e jurisprudência do STF..." class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-edit-topic')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitEditTopic()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR TÓPICO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR DISCIPLINA & PESO DO EDITAL (A1) -->
+  <div id="modal-edit-subject" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-amber-400">
+          <i class="fa-solid fa-sliders text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">AJUSTAR DISCIPLINA & PESO NO EDITAL</h3>
+        </div>
+        <button onclick="closeModal('modal-edit-subject')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <input type="hidden" id="modal-edit-subj-id">
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-tactical text-slate-400 mb-1">NOME DA DISCIPLINA</label>
+          <input type="text" id="modal-edit-subj-name" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">CATEGORIA</label>
+            <select id="modal-edit-subj-category" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs text-slate-200">
+              <option value="Jurídica">Jurídica</option>
+              <option value="Básica">Básica</option>
+              <option value="Específica">Específica</option>
+              <option value="Operacional">Operacional</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-tactical text-slate-400 mb-1">META DE HORAS</label>
+            <input type="number" id="modal-edit-subj-target" class="w-full bg-[#07090e] border border-[#182030] rounded px-2.5 py-1.5 text-xs font-mono-tactical text-slate-200">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-tactical text-amber-400 mb-1">PESO NO EDITAL (0.5 = baixo • 1.5 = médio • 3.0 = peso máximo)</label>
+          <input type="number" step="0.5" min="0.5" max="5" id="modal-edit-subj-weight" class="w-full bg-[#07090e] border border-amber-500/40 rounded px-2.5 py-1.5 text-xs font-mono-tactical text-amber-300 font-bold">
+          <p class="text-[10px] text-slate-500 mt-1">Quanto maior o peso, mais prioridade essa matéria ganha no Ciclo Tático e no Plano do Dia.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-edit-subject')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitEditSubject()" class="px-4 py-1.5 bg-slate-100 hover:bg-white text-slate-950 rounded text-xs font-tactical font-bold shadow">SALVAR AJUSTES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORTADOR DE EDITAL VERTICALIZADO (A5) -->
+  <div id="modal-import-edital" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="tactical-card max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2 text-amber-400">
+          <i class="fa-solid fa-file-import text-sm"></i>
+          <h3 class="text-xs font-bold font-tactical text-slate-100">IMPORTADOR DE CONTEÚDO PROGRAMÁTICO (EDITAL)</h3>
+        </div>
+        <button onclick="closeModal('modal-import-edital')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-400 mb-3">
+        Cole abaixo o conteúdo programático do edital (ex.: PC-TO). Coloque cada matéria em <strong class="text-slate-200">MAIÚSCULAS</strong> ou com <code class="text-amber-300">MATÉRIA: Nome (Peso 3)</code> e os tópicos abaixo (um por linha ou separados por ponto e vírgula <code class="text-amber-300">;</code>). <strong class="text-emerald-400">Suas horas já estudadas serão 100% preservadas!</strong>
+      </p>
+
+      <div class="space-y-3">
+        <textarea id="modal-edital-text" rows="8" placeholder="DIREITO PENAL (Peso 3)&#10;1. Aplicação da lei penal; 2. Teoria do crime&#10;3. Crimes contra a Administração Pública&#10;&#10;LEGISLAÇÃO DO TOCANTINS (Peso 2.5)&#10;- Estatuto dos Policiais Civis (Lei 1.654/2006)&#10;- Estatuto dos Servidores (Lei 1.818/2007)" class="w-full bg-[#07090e] border border-[#182030] rounded p-2.5 text-xs font-mono-tactical text-slate-200 focus:border-amber-500/60 focus:outline-none"></textarea>
+
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center space-x-2">
+            <label class="text-[11px] font-tactical text-slate-400">MODO:</label>
+            <select id="modal-edital-mode" class="bg-[#07090e] border border-[#182030] rounded px-2.5 py-1 text-xs text-slate-200">
+              <option value="merge">Mesclar (manter todas as matérias atuais e somar novas)</option>
+              <option value="replace_unused">Limpar matérias sem horas que não constam no edital</option>
+            </select>
+          </div>
+          <button onclick="previewEditalImport()" class="px-3 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-amber-300 border border-amber-500/40 rounded text-xs font-tactical font-bold transition">
+            <i class="fa-solid fa-eye mr-1"></i>PRÉ-VISUALIZAR
+          </button>
+        </div>
+
+        <div id="edital-preview-box" class="hidden p-3 rounded bg-[#07090e] border border-[#1e2738] space-y-2 max-h-52 overflow-y-auto text-xs"></div>
+      </div>
+
+      <div class="flex justify-end space-x-2.5 mt-5 pt-3 border-t border-[#182030]">
+        <button onclick="closeModal('modal-import-edital')" class="px-3.5 py-1.5 bg-[#141b27] hover:bg-[#1e2738] text-slate-300 rounded text-xs font-tactical border border-[#232f44]">CANCELAR</button>
+        <button onclick="submitEditalImport()" class="px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded text-xs font-tactical font-bold shadow">
+          <i class="fa-solid fa-check mr-1"></i>IMPORTAR PARA O EDITAL
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tactical Toast Container (C3) -->
+  <div id="toast-container"></div>
+
+  <!-- Application Logic -->
+  <script src="/static/js/app.js?v=3.3"></script>
+</body>
+</html>

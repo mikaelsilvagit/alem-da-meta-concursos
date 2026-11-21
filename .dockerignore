@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+*.db-wal
+*.db-shm
+backups/
+.git/
+.vscode/
+.venv/
+scratch/

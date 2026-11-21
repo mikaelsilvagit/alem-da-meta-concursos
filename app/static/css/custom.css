@@ -1,0 +1,331 @@
+/* Tactical Police Aesthetics for QAP Concursos - ULTRA STEALTH POLICE OPS EDITION */
+/* Offline-safe font stack (uses local system fonts seamlessly when offline) */
+:root {
+  --bg-deep: #07090e;
+  --bg-card: #0c1017;
+  --bg-card-hover: #111722;
+  --bg-card-active: #151d2c;
+  --border-tactical: #182030;
+  --border-tactical-bright: #26334a;
+  --border-tactical-steel: #3d4f6e;
+  --blue-police: #1e40af;
+  --blue-police-accent: #2563eb;
+  --gold-badge: #92400e;
+  --gold-badge-light: #d97706;
+  --red-siren: #b91c1c;
+  --green-qap: #059669;
+  --text-white: #f8fafc;
+  --text-gray-light: #cbd5e1;
+  --text-gray-muted: #64748b;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-deep);
+  color: #e2e8f0;
+  /* Matte police tactical weave grid - sober, no neon glare */
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, #07090e 0%, #0a0e16 50%, #07090e 100%);
+  background-size: 24px 24px, 24px 24px, 100% 100%;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.font-tactical {
+  font-family: 'Chakra Petch', 'Bahnschrift', 'Segoe UI Semibold', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.font-mono-tactical {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+}
+
+/* Tactical Police Card */
+.tactical-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-tactical);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.tactical-card:hover {
+  border-color: var(--border-tactical-bright);
+  background-color: var(--bg-card-hover);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+}
+
+.tactical-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+.tactical-card:hover::before {
+  background: var(--border-tactical-steel);
+}
+
+/* Tactical Reticle corner marks */
+.tactical-hud-card {
+  position: relative;
+}
+.tactical-hud-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid #334155;
+  border-right: 2px solid #334155;
+  pointer-events: none;
+}
+
+/* Stealth Radar Dot */
+@keyframes radar-pulse-subtle {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+.radar-live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  animation: radar-pulse-subtle 2s infinite ease-in-out;
+  display: inline-block;
+}
+
+/* Tab active state - crisp tactical steel border */
+.nav-tab-active {
+  background: #141c2b !important;
+  color: #f8fafc !important;
+  border-left: 3px solid #cbd5e1 !important;
+  font-weight: 700;
+}
+
+/* Navigation Tab Button Styling */
+.nav-tab-btn {
+  transition: all 0.15s ease;
+  border-left: 3px solid transparent;
+}
+.nav-tab-btn:hover {
+  background: #111723;
+  color: #f1f5f9;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #07090e;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2636;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Timer Display - Pure Military Spec High Contrast White, zero neon glow */
+.timer-digits {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  text-shadow: none !important;
+}
+
+/* Stencil badge / Tactical Pill */
+.tactical-pill {
+  font-family: 'Chakra Petch', sans-serif;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 0.62rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 2px;
+  border: 1px solid #202b3d;
+  background: #0f1420;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
+}
+
+/* Platform Link Card */
+.platform-card {
+  transition: all 0.2s ease;
+  background: #0d121c;
+  border: 1px solid var(--border-tactical);
+}
+.platform-card:hover {
+  border-color: #334155;
+  background: #121824;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Sound Ambient Wave Animation */
+@keyframes soundwave {
+  0%, 100% { height: 4px; }
+  50% { height: 14px; }
+}
+
+.soundwave-bar {
+  width: 2.5px;
+  background-color: #94a3b8;
+  border-radius: 1px;
+  animation: soundwave 1.2s infinite ease-in-out;
+}
+.soundwave-bar:nth-child(2) { animation-delay: 0.2s; height: 12px; background-color: #cbd5e1; }
+.soundwave-bar:nth-child(3) { animation-delay: 0.4s; height: 8px; background-color: #94a3b8; }
+.soundwave-bar:nth-child(4) { animation-delay: 0.1s; height: 14px; background-color: #cbd5e1; }
+
+/* ==================== COLLAPSIBLE SIDEBAR MODES ==================== */
+#tactical-sidebar {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#main-content-column {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Collapsed Sidebar State */
+.sidebar-collapsed {
+  /* Forces narrow column */
+}
+
+.sidebar-collapsed .sidebar-text,
+.sidebar-collapsed .sidebar-pill,
+.sidebar-collapsed .sidebar-chevron,
+.sidebar-collapsed .sidebar-motivation-card,
+.sidebar-collapsed .sidebar-mission-details {
+  display: none !important;
+}
+
+.sidebar-collapsed .nav-tab-btn {
+  justify-content: center !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.sidebar-collapsed .nav-tab-btn > div {
+  margin: 0 !important;
+  justify-content: center !important;
+}
+
+.sidebar-collapsed .nav-tab-btn i {
+  margin: 0 !important;
+  font-size: 1rem !important;
+  text-align: center !important;
+}
+
+.sidebar-collapsed .sidebar-compact-hide {
+  display: none !important;
+}
+
+.sidebar-collapsed .sidebar-compact-show {
+  display: block !important;
+}
+
+/* Print & PDF Export Styling */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, aside, .modal-backdrop, button, .no-print {
+    display: none !important;
+  }
+  .lg\:col-span-9, .lg\:col-span-11, main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .tactical-card {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 12px;
+  }
+  .text-white, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400 {
+    color: #000000 !important;
+  }
+  .text-blue-400, .text-emerald-400, .text-amber-400 {
+    color: #000000 !important;
+    font-weight: bold;
+  }
+}
+
+/* ==================== TACTICAL TOAST NOTIFICATIONS (C3) ==================== */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 380px;
+  pointer-events: none;
+}
+
+.tactical-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: #0e1420;
+  border: 1px solid #26334a;
+  color: #e2e8f0;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+  animation: toastSlideIn 0.22s ease-out;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.tactical-toast.toast-success { border-left: 3px solid #10b981; }
+.tactical-toast.toast-error { border-left: 3px solid #ef4444; }
+.tactical-toast.toast-warning { border-left: 3px solid #f59e0b; }
+.tactical-toast.toast-info { border-left: 3px solid #3b82f6; }
+
+.tactical-toast.toast-hiding {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sidebar-collapsed .sidebar-group-label {
+  display: none !important;
+}
