@@ -10,12 +10,73 @@ import time
 import base64
 import hashlib
 import secrets
+import threading
+from collections import defaultdict
 from typing import Optional
 from fastapi import Request, HTTPException
 from app.database import get_db
 
 COOKIE_NAME = "alem_da_meta_session"
 SESSION_TTL_SECONDS = 60 * 60 * 24 * 30  # 30 dias
+
+# Rate limiting em memória (thread-safe) para proteção contra força bruta e spam
+_rate_lock = threading.Lock()
+_login_failures: dict = defaultdict(list)
+_register_attempts: dict = defaultdict(list)
+
+LOGIN_MAX_ATTEMPTS = 8
+LOGIN_WINDOW_SECONDS = 300      # 5 minutos
+REGISTER_MAX_ATTEMPTS = 5
+REGISTER_WINDOW_SECONDS = 900   # 15 minutos
+
+
+def get_client_ip(request: Request) -> str:
+    xff = request.headers.get("X-Forwarded-For", "").strip()
+    if xff:
+        return xff.split(",")[0].strip()
+    xri = request.headers.get("X-Real-IP", "").strip()
+    if xri:
+        return xri
+    return request.client.host if request.client else "unknown"
+
+
+def check_login_rate_limit(ip: str):
+    now = time.time()
+    with _rate_lock:
+        recent = [t for t in _login_failures[ip] if now - t < LOGIN_WINDOW_SECONDS]
+        _login_failures[ip] = recent
+        if len(recent) >= LOGIN_MAX_ATTEMPTS:
+            wait_min = max(1, int((LOGIN_WINDOW_SECONDS - (now - recent[0])) // 60) + 1)
+            raise HTTPException(
+                status_code=429,
+                detail=f"Muitas tentativas de login incorretas. Aguarde cerca de {wait_min} minuto(s) para tentar novamente.",
+            )
+
+
+def record_login_failure(ip: str):
+    now = time.time()
+    with _rate_lock:
+        recent = [t for t in _login_failures[ip] if now - t < LOGIN_WINDOW_SECONDS]
+        recent.append(now)
+        _login_failures[ip] = recent
+
+
+def clear_login_failures(ip: str):
+    with _rate_lock:
+        _login_failures.pop(ip, None)
+
+
+def check_register_rate_limit(ip: str):
+    now = time.time()
+    with _rate_lock:
+        recent = [t for t in _register_attempts[ip] if now - t < REGISTER_WINDOW_SECONDS]
+        if len(recent) >= REGISTER_MAX_ATTEMPTS:
+            raise HTTPException(
+                status_code=429,
+                detail="Limite temporário de criação de contas atingido para este IP. Aguarde alguns minutos.",
+            )
+        recent.append(now)
+        _register_attempts[ip] = recent
 
 _cached_secret: Optional[str] = None
 

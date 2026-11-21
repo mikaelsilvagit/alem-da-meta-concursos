@@ -19,7 +19,9 @@ from app.seed_data import seed_initial_data, seed_platforms, seed_tactical_expan
 from app.news_service import sync_estrategia_news
 from app.auth import (
     COOKIE_NAME, SESSION_TTL_SECONDS, hash_password, verify_password,
-    create_session_token, get_current_user, require_user
+    create_session_token, get_current_user, require_user,
+    get_client_ip, check_login_rate_limit, record_login_failure,
+    clear_login_failures, check_register_rate_limit
 )
 from app.career_templates import CAREER_TEMPLATES, DEFAULT_PLATFORMS
 
@@ -41,13 +43,21 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
-# Disable browser caching in development to ensure JS/CSS changes apply immediately
+# Security Headers (Item 3) + Smart Cache Control
 @app.middleware("http")
-async def add_no_cache_headers(request, call_next):
+async def add_security_and_cache_headers(request, call_next):
     response = await call_next(request)
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+
+    if request.url.path.startswith("/static/vendor/"):
+        response.headers["Cache-Control"] = "public, max-age=604800"
+    else:
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
     return response
 
 # Initialize DB and preserve user data on startup
@@ -230,7 +240,9 @@ def auth_me(request: Request):
 
 
 @app.post("/api/auth/register")
-def auth_register(data: RegisterRequest, response: Response):
+def auth_register(data: RegisterRequest, request: Request, response: Response):
+    client_ip = get_client_ip(request)
+    check_register_rate_limit(client_ip)
     uname = re.sub(r"[^a-zA-Z0-9_.-]", "", (data.username or "").strip().lower())
     if len(uname) < 3:
         raise HTTPException(status_code=400, detail="O nome de usuário deve ter pelo menos 3 caracteres (letras/números).")
@@ -290,7 +302,9 @@ def auth_register(data: RegisterRequest, response: Response):
 
 
 @app.post("/api/auth/login")
-def auth_login(data: LoginRequest, response: Response):
+def auth_login(data: LoginRequest, request: Request, response: Response):
+    client_ip = get_client_ip(request)
+    check_login_rate_limit(client_ip)
     ident = (data.username or "").strip().lower()
     if not ident or not data.password:
         raise HTTPException(status_code=400, detail="Informe usuário e senha.")
@@ -300,7 +314,10 @@ def auth_login(data: LoginRequest, response: Response):
         cursor.execute("SELECT * FROM users WHERE LOWER(username) = ? OR (email != '' AND LOWER(email) = ?)", (ident, ident))
         user = cursor.fetchone()
         if not user or not verify_password(data.password, user["password_hash"]):
+            record_login_failure(client_ip)
             raise HTTPException(status_code=401, detail="Usuário ou senha inválidos.")
+
+    clear_login_failures(client_ip)
 
     token = create_session_token(user["id"], user["username"])
     is_https = os.environ.get("COOKIE_SECURE", "").lower() == "true"
