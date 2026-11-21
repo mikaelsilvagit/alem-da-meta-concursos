@@ -403,6 +403,29 @@ def admin_reset_password(target_user_id: int, data: AdminPasswordResetRequest, r
         cursor.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_password(data.new_password), target_user_id))
     return {"success": True, "message": f"Senha provisória definida para @{row['username']}!"}
 
+
+@app.delete("/api/admin/users/{target_user_id}")
+def admin_delete_user(target_user_id: int, request: Request):
+    admin = _require_admin(request)
+    if target_user_id == admin["id"]:
+        raise HTTPException(status_code=400, detail="Você não pode excluir sua própria conta de administrador.")
+
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, username FROM users WHERE id = ?", (target_user_id,))
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+        for tbl in (
+            "study_sessions", "revisions", "simulations", "study_platforms",
+            "approvals", "taf_records", "exam_countdowns", "law_reading_logs",
+            "error_notebook", "discursive_essays", "subjects", "user_profile"
+        ):
+            cursor.execute(f"DELETE FROM {tbl} WHERE user_id = ?", (target_user_id,))
+        cursor.execute("DELETE FROM users WHERE id = ?", (target_user_id,))
+    return {"success": True, "message": f"Usuário @{row['username']} e todos os seus dados foram excluídos."}
+
 # Helper: Compute Weighted Intelligent Tactical Cycle (A1 - Next Mission)
 def compute_tactical_cycle(cursor, user_id: int, return_all=False):
     cursor.execute("""

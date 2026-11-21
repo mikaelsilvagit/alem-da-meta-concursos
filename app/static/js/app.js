@@ -2824,11 +2824,33 @@ async function loadAdminUsers() {
           <button type="button" onclick="adminResetUserPassword(${u.id}, '${escapeHtml(u.username).replace(/'/g, "\\'")}')" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded text-[10px] font-tactical font-bold">
             REDEFINIR
           </button>
+          ${state.currentUser && u.id !== state.currentUser.id ? `
+            <button type="button" onclick="adminDeleteUser(${u.id}, '${escapeHtml(u.username).replace(/'/g, "\\'")}')" class="px-2 py-1 bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-700/50 rounded text-[10px] transition" title="Excluir usuário e todos os seus dados">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          ` : ''}
         </div>
       </div>
     `).join('');
   } catch (e) {
     console.error('Erro ao carregar usuários:', e);
+  }
+}
+
+async function adminDeleteUser(userId, username) {
+  if (!confirm(`Tem certeza que deseja EXCLUIR permanentemente a conta @${username} e todos os seus dados?`)) return;
+  try {
+    const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (res.ok) {
+      tacticalSound.beep(500, 0.08);
+      showToast(data.message || `Usuário @${username} excluído.`, 'info', 4500);
+      loadAdminUsers();
+    } else {
+      showToast(data.detail || 'Erro ao excluir usuário.', 'error');
+    }
+  } catch (e) {
+    showToast('Erro de conexão ao excluir usuário.', 'error');
   }
 }
 
