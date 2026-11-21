@@ -49,6 +49,7 @@ function dismissToast(toast) {
 // State Management
 const state = {
   currentTab: 'dashboard',
+  currentUser: null,
   profile: null,
   dashboardData: null,
   subjects: [],
@@ -284,6 +285,7 @@ async function checkAuthAndBoot() {
     const res = await _origFetch('/api/auth/me');
     const data = await res.json();
     if (data && data.authenticated) {
+      state.currentUser = data.user || null;
       hideAuthOverlay();
       loadDashboard();
       loadSubjects();
@@ -364,6 +366,7 @@ async function submitLogin() {
       showToast(data.detail || 'Usuário ou senha inválidos.', 'error');
       return;
     }
+    state.currentUser = data.user || null;
     hideAuthOverlay();
     tacticalSound.missionComplete();
     showToast(data.message || 'Login realizado com sucesso!', 'success');
@@ -409,6 +412,7 @@ async function submitRegister() {
       showToast(data.detail || 'Não foi possível criar a conta.', 'error');
       return;
     }
+    state.currentUser = data.user || null;
     hideAuthOverlay();
     tacticalSound.missionComplete();
     showToast(data.message || 'Conta criada com sucesso!', 'success', 5500);
@@ -425,6 +429,7 @@ async function logoutUser() {
   try {
     await _origFetch('/api/auth/logout', { method: 'POST' });
   } catch (e) {}
+  state.currentUser = null;
   state.dashboardData = null;
   state.subjects = [];
   showAuthOverlay('login');
@@ -2778,7 +2783,72 @@ function openProfileModal() {
     document.getElementById('modal-profile-weekly').value = state.profile.weekly_goal_hours || 25;
     document.getElementById('modal-profile-sound').checked = state.soundEnabled;
   }
+  const adminPanel = document.getElementById('admin-users-panel');
+  if (adminPanel) {
+    if (state.currentUser && state.currentUser.is_admin === 1) {
+      adminPanel.classList.remove('hidden');
+      loadAdminUsers();
+    } else {
+      adminPanel.classList.add('hidden');
+    }
+  }
   document.getElementById('modal-profile').classList.remove('hidden');
+}
+
+async function loadAdminUsers() {
+  const listEl = document.getElementById('admin-users-list');
+  if (!listEl) return;
+  try {
+    const res = await fetch('/api/admin/users');
+    if (!res.ok) return;
+    const users = await res.json();
+    listEl.innerHTML = users.map(u => `
+      <div class="p-2 rounded bg-[#07090e] border border-[#182030] flex flex-wrap items-center justify-between gap-2">
+        <div class="min-w-0">
+          <div class="flex items-center space-x-1.5">
+            <span class="text-xs font-bold text-slate-100">${escapeHtml(u.display_name)}</span>
+            <span class="text-[10px] font-mono-tactical text-slate-400">@${escapeHtml(u.username)}</span>
+            ${u.is_admin ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 border border-amber-600/40 font-mono-tactical">ADMIN</span>` : ''}
+          </div>
+          <div class="text-[10px] text-slate-500 truncate">${escapeHtml(u.target_role || 'Sem alvo definido')}</div>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <input type="text" id="admin-pwd-${u.id}" placeholder="Nova senha" class="w-24 bg-[#0c1017] border border-[#232f44] rounded px-1.5 py-1 text-[11px] text-slate-200">
+          <button type="button" onclick="adminResetUserPassword(${u.id}, '${escapeHtml(u.username).replace(/'/g, "\\'")}')" class="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded text-[10px] font-tactical font-bold">
+            REDEFINIR
+          </button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error('Erro ao carregar usuários:', e);
+  }
+}
+
+async function adminResetUserPassword(userId, username) {
+  const input = document.getElementById(`admin-pwd-${userId}`);
+  const newPassword = input ? input.value.trim() : '';
+  if (newPassword.length < 4) {
+    showToast('A nova senha provisória precisa ter pelo menos 4 caracteres.', 'warning');
+    return;
+  }
+  try {
+    const res = await fetch(`/api/admin/users/${userId}/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ new_password: newPassword })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      if (input) input.value = '';
+      tacticalSound.missionComplete();
+      showToast(`Senha de @${username} redefinida! Já pode repassar ao usuário.`, 'success', 5000);
+    } else {
+      showToast(data.detail || 'Erro ao redefinir senha.', 'error');
+    }
+  } catch (e) {
+    showToast('Erro de conexão ao redefinir senha.', 'error');
+  }
 }
 
 async function submitProfileUpdate() {

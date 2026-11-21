@@ -64,6 +64,12 @@ def on_startup():
         print("✓ Carga inicial concluída com sucesso.")
     else:
         print("🛡️ Além da Meta Concursos v3.0 - Multi-Usuário ativo (WAL + índices + dados preservados).")
+    # Garantir que sempre exista ao menos 1 administrador (primeiro usuário cadastrado)
+    with get_db() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) as cnt FROM users WHERE is_admin = 1")
+        if cur.fetchone()["cnt"] == 0:
+            cur.execute("UPDATE users SET is_admin = 1 WHERE id = (SELECT id FROM users ORDER BY id ASC LIMIT 1)")
     if auto_backup_db:
         bkp = auto_backup_db(max_keep=10)
         if bkp:
@@ -239,10 +245,13 @@ def auth_register(data: RegisterRequest, response: Response):
         if cursor.fetchone():
             raise HTTPException(status_code=400, detail="Este nome de usuário já está em uso. Escolha outro.")
 
+        cursor.execute("SELECT COUNT(*) as cnt FROM users")
+        is_first_user = 1 if cursor.fetchone()["cnt"] == 0 else 0
+
         cursor.execute("""
         INSERT INTO users (username, email, display_name, password_hash, is_admin)
-        VALUES (?, ?, ?, ?, 0)
-        """, (uname, (data.email or "").strip(), disp, pwd_hash))
+        VALUES (?, ?, ?, ?, ?)
+        """, (uname, (data.email or "").strip(), disp, pwd_hash, is_first_user))
         uid = cursor.lastrowid
 
         cursor.execute("""
@@ -272,7 +281,7 @@ def auth_register(data: RegisterRequest, response: Response):
     )
     return {
         "authenticated": True,
-        "user": {"id": uid, "username": uname, "display_name": disp, "is_admin": 0},
+        "user": {"id": uid, "username": uname, "display_name": disp, "is_admin": is_first_user},
         "message": f"Conta criada! Trilha '{tpl['label']}' configurada para você."
     }
 
@@ -331,6 +340,48 @@ def apply_career_template(data: ApplyCareerTemplateRequest, request: Request):
         cursor = conn.cursor()
         final_role = _populate_user_career(cursor, user["id"], data.career_key, data.target_role or "", mode=data.mode)
     return {"success": True, "target_role": final_role, "message": f"Trilha aplicada para '{final_role}'! Suas horas estudadas foram preservadas."}
+
+
+# ==================== PAINEL ADMIN (GESTÃO DE USUÁRIOS & SENHAS) ====================
+class AdminPasswordResetRequest(BaseModel):
+    new_password: str
+
+
+def _require_admin(request: Request) -> dict:
+    user = require_user(request)
+    if not user.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Acesso restrito ao administrador do sistema.")
+    return user
+
+
+@app.get("/api/admin/users")
+def admin_list_users(request: Request):
+    _require_admin(request)
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+        SELECT u.id, u.username, u.display_name, u.email, u.is_admin, u.created_at,
+               COALESCE(p.target_role, '') as target_role
+        FROM users u
+        LEFT JOIN user_profile p ON p.user_id = u.id
+        ORDER BY u.id ASC
+        """)
+        return [dict(r) for r in cursor.fetchall()]
+
+
+@app.post("/api/admin/users/{target_user_id}/reset-password")
+def admin_reset_password(target_user_id: int, data: AdminPasswordResetRequest, request: Request):
+    _require_admin(request)
+    if len(data.new_password or "") < 4:
+        raise HTTPException(status_code=400, detail="A nova senha provisória deve ter pelo menos 4 caracteres.")
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, username FROM users WHERE id = ?", (target_user_id,))
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        cursor.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_password(data.new_password), target_user_id))
+    return {"success": True, "message": f"Senha provisória definida para @{row['username']}!"}
 
 # Helper: Compute Weighted Intelligent Tactical Cycle (A1 - Next Mission)
 def compute_tactical_cycle(cursor, user_id: int, return_all=False):

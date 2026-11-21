@@ -231,7 +231,20 @@
             </div>
 
             <!-- Rank XP Progress Bar -->
-            <div class="pt-2 border-t border-[#182030]">
+            <!-- PAINEL ADMIN: REDEFINIR SENHA DE USUÁRIOS -->
+        <div id="admin-users-panel" class="pt-2 border-t border-amber-500/30 space-y-2 hidden">
+          <div class="flex items-center justify-between">
+            <label class="block text-[11px] font-tactical text-amber-400 font-bold">
+              <i class="fa-solid fa-user-shield mr-1"></i>PAINEL ADMIN — CONTAS &amp; REDEFINIR SENHA
+            </label>
+            <button type="button" onclick="loadAdminUsers()" class="text-[10px] text-slate-400 hover:text-white font-mono-tactical">
+              <i class="fa-solid fa-rotate mr-0.5"></i>Atualizar
+            </button>
+          </div>
+          <div id="admin-users-list" class="space-y-1.5 max-h-44 overflow-y-auto pr-1"></div>
+        </div>
+
+        <div class="pt-2 border-t border-[#182030]">
               <div class="flex justify-between text-[10px] mb-1">
                 <span class="text-slate-400 font-mono-tactical">Patente</span>
                 <span class="text-amber-400 font-mono-tactical font-bold" id="rank-xp-hours">0h / 10h</span>
@@ -1760,7 +1773,7 @@
 
   <!-- MODAL: PROFILE & SETTINGS -->
   <div id="modal-profile" class="modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="tactical-card max-w-md w-full bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
+    <div class="tactical-card max-w-lg w-full max-h-[90vh] overflow-y-auto bg-[#0c1017] border border-[#182030] rounded-lg p-4 sm:p-5 shadow-2xl shadow-black/90">
       <div class="flex justify-between items-center mb-3">
         <h3 class="text-xs font-bold font-tactical text-slate-100">CONFIGURAÇÕES OPERACIONAIS DO AGENTE</h3>
         <button onclick="closeModal('modal-profile')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -1813,6 +1826,19 @@
             <input type="password" id="modal-pwd-new" placeholder="Nova senha" class="bg-[#07090e] border border-[#182030] rounded px-2 py-1 text-xs text-slate-200">
           </div>
           <button type="button" onclick="submitChangePassword()" class="text-[11px] px-2.5 py-1 bg-[#141b27] hover:bg-[#1e2738] text-slate-200 border border-[#232f44] rounded font-tactical">ATUALIZAR SENHA</button>
+        </div>
+
+        <!-- PAINEL ADMIN: REDEFINIR SENHA DE USUÁRIOS -->
+        <div id="admin-users-panel" class="pt-2 border-t border-amber-500/30 space-y-2 hidden">
+          <div class="flex items-center justify-between">
+            <label class="block text-[11px] font-tactical text-amber-400 font-bold">
+              <i class="fa-solid fa-user-shield mr-1"></i>PAINEL ADMIN — CONTAS &amp; REDEFINIR SENHA
+            </label>
+            <button type="button" onclick="loadAdminUsers()" class="text-[10px] text-slate-400 hover:text-white font-mono-tactical">
+              <i class="fa-solid fa-rotate mr-0.5"></i>Atualizar
+            </button>
+          </div>
+          <div id="admin-users-list" class="space-y-1.5 max-h-44 overflow-y-auto pr-1"></div>
         </div>
 
         <div class="pt-2 border-t border-[#182030]">
@@ -2630,6 +2656,6 @@
   <div id="toast-container"></div>
 
   <!-- Application Logic -->
-  <script src="/static/js/app.js?v=3.3"></script>
+  <script src="/static/js/app.js?v=3.4"></script>
 </body>
 </html>
