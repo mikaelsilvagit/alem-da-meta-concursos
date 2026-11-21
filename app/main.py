@@ -64,9 +64,12 @@ def on_startup():
         print("✓ Carga inicial concluída com sucesso.")
     else:
         print("🛡️ Além da Meta Concursos v3.0 - Multi-Usuário ativo (WAL + índices + dados preservados).")
-    # Garantir que sempre exista ao menos 1 administrador (primeiro usuário cadastrado)
+    # Garantir que sempre exista ao menos 1 administrador (primeiro usuário cadastrado ou ADMIN_USERNAME)
     with get_db() as conn:
         cur = conn.cursor()
+        admin_uname = os.environ.get("ADMIN_USERNAME", "").strip().lower()
+        if admin_uname:
+            cur.execute("UPDATE users SET is_admin = 1 WHERE LOWER(username) = ?", (admin_uname,))
         cur.execute("SELECT COUNT(*) as cnt FROM users WHERE is_admin = 1")
         if cur.fetchone()["cnt"] == 0:
             cur.execute("UPDATE users SET is_admin = 1 WHERE id = (SELECT id FROM users ORDER BY id ASC LIMIT 1)")

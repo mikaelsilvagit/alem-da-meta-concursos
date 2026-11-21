@@ -2775,7 +2775,7 @@ async function submitAddSimulation() {
 }
 
 // ==================== PROFILE SETTINGS ====================
-function openProfileModal() {
+async function openProfileModal() {
   if (state.profile) {
     document.getElementById('modal-profile-name').value = state.profile.name || '';
     document.getElementById('modal-profile-target').value = state.profile.target_role || '';
@@ -2783,16 +2783,23 @@ function openProfileModal() {
     document.getElementById('modal-profile-weekly').value = state.profile.weekly_goal_hours || 25;
     document.getElementById('modal-profile-sound').checked = state.soundEnabled;
   }
+  document.getElementById('modal-profile').classList.remove('hidden');
+
   const adminPanel = document.getElementById('admin-users-panel');
   if (adminPanel) {
-    if (state.currentUser && state.currentUser.is_admin === 1) {
+    try {
+      const meRes = await fetch('/api/auth/me');
+      const meData = await meRes.json();
+      if (meData && meData.user) state.currentUser = meData.user;
+    } catch (e) {}
+
+    if (state.currentUser && Boolean(state.currentUser.is_admin)) {
       adminPanel.classList.remove('hidden');
       loadAdminUsers();
     } else {
       adminPanel.classList.add('hidden');
     }
   }
-  document.getElementById('modal-profile').classList.remove('hidden');
 }
 
 async function loadAdminUsers() {
