@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+  <defs>
+    <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdd038"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#131e35"/>
+      <stop offset="100%" stop-color="#070a12"/>
+    </linearGradient>
+    <radialGradient id="topGlow" cx="50%" cy="26%" r="55%">
+      <stop offset="0%" stop-color="#1e2f52" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#070a12" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="markGrad" x1="50%" y1="11%" x2="50%" y2="84%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fedc48"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <!-- Squircle Gold Rim -->
+  <rect x="2" y="2" width="96" height="96" rx="22.5" fill="url(#rimGrad)"/>
+  <!-- Tactical Dark Obsidian Core -->
+  <rect x="6.2" y="6.2" width="87.6" height="87.6" rx="19" fill="url(#bgGrad)"/>
+  <rect x="6.2" y="6.2" width="87.6" height="87.6" rx="19" fill="url(#topGlow)"/>
+  <!-- "A" + Upward Arrow Monogram -->
+  <path d="M 50 11 L 76.5 37.5 L 68.7 45.3 L 61.6 38.2 L 80 84 L 64.5 84 L 58.8 68.5 L 41.2 68.5 L 35.5 84 L 20 84 L 38.4 38.2 L 31.3 45.3 L 23.5 37.5 Z M 50 35.5 L 55.8 55.5 L 44.2 55.5 Z" fill="url(#markGrad)" fill-rule="evenodd"/>
+</svg>

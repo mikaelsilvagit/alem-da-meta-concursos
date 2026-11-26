@@ -10,7 +10,7 @@ import unicodedata
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response, FileResponse
 from pydantic import BaseModel
 from typing import Optional, List
 
@@ -52,7 +52,11 @@ async def add_security_and_cache_headers(request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
 
-    if request.url.path.startswith("/static/vendor/"):
+    if (
+        request.url.path.startswith("/static/vendor/")
+        or request.url.path.startswith("/static/icons/")
+        or request.url.path in ("/favicon.ico", "/static/favicon.ico", "/apple-touch-icon.png", "/static/site.webmanifest")
+    ):
         response.headers["Cache-Control"] = "public, max-age=604800"
     else:
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -146,6 +150,16 @@ def get_rank_info(total_seconds: int):
 @app.get("/", response_class=HTMLResponse)
 def serve_index(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def serve_favicon():
+    return FileResponse(os.path.join(STATIC_DIR, "favicon.ico"), media_type="image/x-icon")
+
+
+@app.get("/apple-touch-icon.png", include_in_schema=False)
+def serve_apple_touch_icon():
+    return FileResponse(os.path.join(STATIC_DIR, "icons", "apple-touch-icon.png"), media_type="image/png")
 
 
 @app.get("/health")
